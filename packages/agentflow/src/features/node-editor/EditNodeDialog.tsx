@@ -5,21 +5,16 @@ import { Avatar, Box, ButtonBase, Dialog, DialogContent, Stack, TextField, Typog
 import { useTheme } from '@mui/material/styles'
 import { IconCheck, IconInfoCircle, IconPencil, IconX } from '@tabler/icons-react'
 
-import { NodeInputHandler } from '../../atoms'
-import type { InputParam, NodeData } from '../../core/types'
-import { useAgentflowContext, useConfigContext } from '../../infrastructure/store'
+import { NodeInputHandler } from '@/atoms'
+import type { EditDialogProps, InputParam, NodeData } from '@/core/types'
+import { useAgentflowContext, useConfigContext } from '@/infrastructure/store'
 
 export interface EditNodeDialogProps {
     show: boolean
-    dialogProps: {
-        inputParams?: InputParam[]
-        data?: NodeData
-        disabled?: boolean
-    }
+    dialogProps: EditDialogProps
     onCancel: () => void
 }
 
-// TODO: Integrate with canvas node click/double-click to open this dialog for editing node properties
 /**
  * Dialog for editing node properties
  */
@@ -47,13 +42,13 @@ function EditNodeDialogComponent({ show, dialogProps, onCancel }: EditNodeDialog
     const onCustomDataChange = ({ inputParam, newValue }: { inputParam: InputParam; newValue: unknown }) => {
         if (!data) return
 
-        const updatedInputs = {
-            ...data.inputs,
+        const updatedInputValues = {
+            ...data.inputValues,
             [inputParam.name]: newValue
         }
 
-        updateNodeData(data.id, { inputs: updatedInputs })
-        setData({ ...data, inputs: updatedInputs })
+        updateNodeData(data.id, { inputValues: updatedInputValues })
+        setData({ ...data, inputValues: updatedInputValues })
     }
 
     useEffect(() => {
@@ -63,11 +58,6 @@ function EditNodeDialogComponent({ show, dialogProps, onCancel }: EditNodeDialog
         if (dialogProps.data) {
             setData(dialogProps.data)
             if (dialogProps.data.label) setNodeName(dialogProps.data.label)
-        }
-
-        return () => {
-            setInputParams([])
-            setData(null)
         }
     }, [dialogProps])
 

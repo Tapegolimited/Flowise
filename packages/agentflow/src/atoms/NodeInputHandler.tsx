@@ -1,7 +1,8 @@
-import { ComponentType, useCallback, useEffect, useRef, useState } from 'react'
+import { ComponentType, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Handle, Position, useUpdateNodeInternals } from 'reactflow'
 
 import { Box, FormControlLabel, IconButton, MenuItem, Select, Switch, TextField, Tooltip, TooltipProps, Typography } from '@mui/material'
+import Autocomplete from '@mui/material/Autocomplete'
 import { styled, useTheme } from '@mui/material/styles'
 import { tooltipClasses } from '@mui/material/Tooltip'
 import { IconArrowsMaximize, IconVariable } from '@tabler/icons-react'
@@ -9,6 +10,7 @@ import { IconArrowsMaximize, IconVariable } from '@tabler/icons-react'
 import type { InputAnchor, InputParam, NodeData } from '@/core/types'
 
 import ArrayInput from './ArrayInput'
+import { ExpandTextDialog } from './ExpandTextDialog'
 
 const CustomWidthTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)({
     [`& .${tooltipClasses.tooltip}`]: {
@@ -61,6 +63,7 @@ export function NodeInputHandler({
     const updateNodeInternals = useUpdateNodeInternals()
 
     const [position, setPosition] = useState(0)
+    const [expandOpen, setExpandOpen] = useState(false)
 
     const handleDataChange = useCallback(
         (newValue: unknown) => {
@@ -81,6 +84,25 @@ export function NodeInputHandler({
     useEffect(() => {
         updateNodeInternals(data.id)
     }, [data.id, position, updateNodeInternals])
+
+    const isExpandable = useMemo(
+        () => (inputParam?.type === 'string' && !!inputParam?.rows) || inputParam?.type === 'code',
+        [inputParam?.type, inputParam?.rows]
+    )
+
+    const expandValue = useMemo(() => {
+        if (!inputParam) return ''
+        const v = data.inputValues?.[inputParam.name] ?? inputParam.default ?? ''
+        return typeof v === 'string' ? v : JSON.stringify(v)
+    }, [data.inputValues, inputParam])
+
+    const handleExpandConfirm = useCallback(
+        (value: string) => {
+            handleDataChange(value)
+            setExpandOpen(false)
+        },
+        [handleDataChange]
+    )
 
     const renderInput = () => {
         if (!inputParam) return null
@@ -135,6 +157,47 @@ export function NodeInputHandler({
                         ))}
                     </Select>
                 )
+
+            case 'multiOptions': {
+                // Stored as JSON-serialized array of names, e.g. '["option1","option2"]'
+                const staticOptions = (inputParam.options ?? []).map((opt) => (typeof opt === 'string' ? { label: opt, name: opt } : opt))
+
+                let selectedNames: string[] = []
+                if (typeof value === 'string' && value.startsWith('[')) {
+                    try {
+                        const parsed = JSON.parse(value)
+                        if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
+                            selectedNames = parsed
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse multiOptions value:', value, e)
+                        selectedNames = []
+                    }
+                } else if (Array.isArray(value)) {
+                    selectedNames = value.filter((item): item is string => typeof item === 'string')
+                }
+
+                const selectedOptions = staticOptions.filter((o) => selectedNames.includes(o.name))
+
+                return (
+                    <Autocomplete<{ label: string; name: string }, true>
+                        multiple
+                        filterSelectedOptions
+                        size='small'
+                        disabled={disabled}
+                        options={staticOptions}
+                        value={selectedOptions}
+                        getOptionLabel={(o) => o.label}
+                        isOptionEqualToValue={(o, v) => o.name === v.name}
+                        onChange={(_e, selection) => {
+                            const names = selection.map((s) => s.name)
+                            handleDataChange(names.length > 0 ? JSON.stringify(names) : '')
+                        }}
+                        sx={{ mt: 1 }}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                )
+            }
 
             case 'array':
                 return (
@@ -235,7 +298,7 @@ export function NodeInputHandler({
                                     <IconVariable size={20} style={{ color: 'teal' }} />
                                 </Tooltip>
                             )}
-                            {((inputParam?.type === 'string' && inputParam?.rows) || inputParam?.type === 'code') && (
+                            {isExpandable && (
                                 <IconButton
                                     size='small'
                                     sx={{
@@ -245,6 +308,8 @@ export function NodeInputHandler({
                                     }}
                                     title='Expand'
                                     color='primary'
+                                    disabled={disabled}
+                                    onClick={() => setExpandOpen(true)}
                                 >
                                     <IconArrowsMaximize />
                                 </IconButton>
@@ -253,6 +318,18 @@ export function NodeInputHandler({
                         {renderInput()}
                     </Box>
                 </>
+            )}
+
+            {isExpandable && (
+                <ExpandTextDialog
+                    open={expandOpen}
+                    value={expandValue}
+                    title={inputParam?.label}
+                    placeholder={inputParam?.placeholder}
+                    disabled={disabled}
+                    onConfirm={handleExpandConfirm}
+                    onCancel={() => setExpandOpen(false)}
+                />
             )}
         </div>
     )

@@ -60,14 +60,14 @@ class Mem0_Memory implements INode {
                 optional: true
             },
             {
-                                label: 'Host URL',
-                                name: 'host',
-                                type: 'string',
-                                description: 'Custom Mem0 API host URL. Leave empty to use the default (https://api.mem0.ai)',
-                                placeholder: 'https://api.mem0.ai',
+                label: 'Host URL',
+                name: 'host',
+                type: 'string',
+                description: 'Custom Mem0 API host URL. Leave empty to use the default (https://api.mem0.ai)',
+                placeholder: 'https://api.mem0.ai',
                 default: '',
-                                optional: true,
-                                additionalParams: true
+                optional: true,
+                additionalParams: true
             },
             // Added toggle to use Flowise chat ID
             {

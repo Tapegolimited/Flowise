@@ -72,6 +72,7 @@ import { OMIT_QUEUE_JOB_DATA } from './constants'
 import { executeAgentFlow } from './buildAgentflow'
 import { Workspace } from '../enterprise/database/entities/workspace.entity'
 import { Organization } from '../enterprise/database/entities/organization.entity'
+import { getPredictionChatId } from './predictionChatIdentity'
 
 const shouldAutoPlayTTS = (textToSpeechConfig: string | undefined | null): boolean => {
     if (!textToSpeechConfig) return false
@@ -1004,7 +1005,7 @@ export const utilBuildChatflow = async (req: Request, isInternal: boolean = fals
     const httpProtocol = req.get('x-forwarded-proto') || req.protocol
     const baseURL = `${httpProtocol}://${req.get('host')}`
     const incomingInput: IncomingInput = req.body || {} // Ensure incomingInput is never undefined
-    const chatId = incomingInput.chatId ?? incomingInput.overrideConfig?.sessionId ?? uuidv4()
+    const chatId = getPredictionChatId(incomingInput)
     const files = (req.files as Express.Multer.File[]) || []
     const abortControllerId = `${chatflow.id}_${chatId}`
     const isTool = req.get('flowise-tool') === 'true'

@@ -6,7 +6,7 @@ import predictionsServices from '../../services/predictions'
 import { InternalFlowiseError } from '../../errors/internalFlowiseError'
 import { StatusCodes } from 'http-status-codes'
 import { getRunningExpressApp } from '../../utils/getRunningExpressApp'
-import { v4 as uuidv4 } from 'uuid'
+import { getPredictionChatId } from '../../utils/predictionChatIdentity'
 import { getErrorMessage } from '../../errors/utils'
 import { MODE } from '../../Interface'
 
@@ -61,7 +61,7 @@ const createPrediction = async (req: Request, res: Response, next: NextFunction)
 
                 let chatId = req.body.chatId
                 if (!req.body.chatId) {
-                    chatId = req.body.chatId ?? req.body.overrideConfig?.sessionId ?? uuidv4()
+                    chatId = getPredictionChatId(req.body)
                     req.body.chatId = chatId
                 }
                 const isQueueMode = process.env.MODE === MODE.QUEUE

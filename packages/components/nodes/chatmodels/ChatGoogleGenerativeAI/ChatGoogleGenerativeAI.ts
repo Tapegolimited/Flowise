@@ -7,6 +7,7 @@ import { getModels, MODEL_TYPE } from '../../../src/modelLoader'
 import { GoogleGenerativeAIChatInput } from '@langchain/google-genai'
 import { ChatGoogleGenerativeAI } from './FlowiseChatGoogleGenerativeAI'
 import { checkDenyList } from '../../../src/httpSecurity'
+import { readTobyContextBudgetConfig } from './TobyContextBudget'
 
 class GoogleGenerativeAI_ChatModels implements INode {
     label: string
@@ -23,7 +24,7 @@ class GoogleGenerativeAI_ChatModels implements INode {
     constructor() {
         this.label = 'Google Gemini'
         this.name = 'chatGoogleGenerativeAI'
-        this.version = 3.1
+        this.version = 3.2
         this.type = 'ChatGoogleGenerativeAI'
         this.icon = 'GoogleGemini.svg'
         this.category = 'Chat Models'
@@ -230,6 +231,43 @@ class GoogleGenerativeAI_ChatModels implements INode {
                 description: 'Base URL for the API. Leave empty to use the default.',
                 optional: true,
                 additionalParams: true
+            },
+            {
+                label: 'Toby Native Context Budget',
+                name: 'tobyContextBudgetEnabled',
+                type: 'boolean',
+                description: 'Opt-in native Gemini count of each full request before generation. Fails closed; never trims files.',
+                default: false,
+                optional: true,
+                additionalParams: true
+            },
+            {
+                label: 'Verified Context Window Tokens',
+                name: 'tobyContextWindowTokens',
+                type: 'number',
+                description: 'Operator-verified limit for the selected native Gemini model; includes reserved Max Output Tokens.',
+                step: 1,
+                optional: true,
+                additionalParams: true
+            },
+            {
+                label: 'Context Budget Safety Margin Tokens',
+                name: 'tobyContextBudgetMarginTokens',
+                type: 'number',
+                default: 2048,
+                step: 1,
+                optional: true,
+                additionalParams: true
+            },
+            {
+                label: 'Native Token Count Timeout (ms)',
+                name: 'tobyContextBudgetTimeoutMs',
+                type: 'number',
+                description: 'Maximum 3000ms. A timeout blocks generation with a retryable budget error.',
+                default: 1500,
+                step: 1,
+                optional: true,
+                additionalParams: true
             }
         ]
     }
@@ -242,6 +280,7 @@ class GoogleGenerativeAI_ChatModels implements INode {
     }
 
     async init(nodeData: INodeData, _: string, options: ICommonObject): Promise<any> {
+        const tobyContextBudget = readTobyContextBudgetConfig(nodeData.inputs)
         const credentialData = await getCredentialData(nodeData.credential ?? '', options)
         const apiKey = getCredentialParam('googleGenerativeAPIKey', credentialData, nodeData)
 
@@ -326,7 +365,7 @@ class GoogleGenerativeAI_ChatModels implements INode {
             }
         }
 
-        const model = new ChatGoogleGenerativeAI(nodeData.id, obj)
+        const model = new ChatGoogleGenerativeAI(nodeData.id, obj, tobyContextBudget)
         model.setMultiModalOption(multiModalOption)
 
         return model

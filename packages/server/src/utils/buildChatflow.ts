@@ -73,6 +73,7 @@ import { executeAgentFlow } from './buildAgentflow'
 import { Workspace } from '../enterprise/database/entities/workspace.entity'
 import { Organization } from '../enterprise/database/entities/organization.entity'
 import { getPredictionChatId } from './predictionChatIdentity'
+import { getTobyBoundSourceUpload, prepareTobyBoundSourceUpload } from './tobyBoundSourceFile'
 
 const shouldAutoPlayTTS = (textToSpeechConfig: string | undefined | null): boolean => {
     if (!textToSpeechConfig) return false
@@ -344,12 +345,26 @@ export const executeFlow = async ({
      */
     let fileUploads: IFileUpload[] = []
     let uploadedFilesContent = ''
+    const boundSourceUpload = getTobyBoundSourceUpload(incomingInput)
     if (uploads) {
         fileUploads = uploads
         for (let i = 0; i < fileUploads.length; i += 1) {
             await checkStorage(orgId, subscriptionId, usageCacheManager)
 
             const upload = fileUploads[i]
+
+            if (upload === boundSourceUpload) {
+                const prepared = await prepareTobyBoundSourceUpload(upload, {
+                    orgId,
+                    chatflowid,
+                    chatId,
+                    fileLoaderPath: componentNodes['fileLoader'].filePath as string,
+                    updateUsage: (size) => updateStorageUsage(orgId, workspaceId, size, usageCacheManager)
+                })
+                uploadedFilesContent += prepared.content
+                fileUploads[i] = prepared.upload
+                continue
+            }
 
             // if upload in an image, a rag file, or audio
             if ((upload.type === 'file' || upload.type === 'file:rag' || upload.type === 'audio') && upload.data) {

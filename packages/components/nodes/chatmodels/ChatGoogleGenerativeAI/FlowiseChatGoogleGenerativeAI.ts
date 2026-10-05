@@ -30,6 +30,7 @@ import {
 import { ChatGeneration } from '@langchain/core/outputs'
 import { ToolCallChunk } from '@langchain/core/messages/tool'
 import { v4 as uuidv4 } from 'uuid'
+import { prepareTobyBudgetedRequest, TobyContextBudgetConfig } from './TobyContextBudget'
 
 // ============================================================================
 // Constants
@@ -771,12 +772,14 @@ export class ChatGoogleGenerativeAI extends LangchainChatGoogleGenerativeAI impl
     configuredMaxToken?: number
     multiModalOption: IMultiModalOption
     id: string
+    private readonly tobyContextBudget?: TobyContextBudgetConfig
 
-    constructor(id: string, fields: GoogleGenerativeAIChatInput) {
+    constructor(id: string, fields: GoogleGenerativeAIChatInput, tobyContextBudget?: TobyContextBudgetConfig) {
         super(fields)
         this.id = id
         this.configuredModel = fields?.model ?? ''
         this.configuredMaxToken = fields?.maxOutputTokens
+        this.tobyContextBudget = tobyContextBudget
     }
 
     /**
@@ -827,10 +830,13 @@ export class ChatGoogleGenerativeAI extends LangchainChatGoogleGenerativeAI impl
         }
 
         // Non-streaming: make the API call directly
-        const res = await (this as any).completionWithRetry({
-            ...parameters,
-            contents: actualPrompt
-        })
+        let request = { ...parameters, contents: actualPrompt }
+        if (this.tobyContextBudget) {
+            request = await prepareTobyBudgetedRequest((this as any).client, request, this.tobyContextBudget, options.signal)
+        }
+        const res = this.tobyContextBudget
+            ? await (this as any).completionWithRetry(request, options)
+            : await (this as any).completionWithRetry(request)
 
         let usageMetadata: UsageMetadata | undefined
         if ('usageMetadata' in res.response) {
@@ -870,9 +876,9 @@ export class ChatGoogleGenerativeAI extends LangchainChatGoogleGenerativeAI impl
         }
 
         const parameters = this.invocationParams(options)
-        const request = {
-            ...parameters,
-            contents: actualPrompt
+        let request = { ...parameters, contents: actualPrompt }
+        if (this.tobyContextBudget) {
+            request = await prepareTobyBudgetedRequest((this as any).client, request, this.tobyContextBudget, options.signal)
         }
 
         const stream = await (this as any).caller.callWithOptions({ signal: options?.signal }, async () => {

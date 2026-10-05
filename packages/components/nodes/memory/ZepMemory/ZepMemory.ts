@@ -2,6 +2,7 @@ import { ZepMemory, ZepMemoryInput } from '@langchain/community/memory/zep'
 import { BaseMessage } from '@langchain/core/messages'
 import { InputValues, MemoryVariables, OutputValues } from '@langchain/classic/memory'
 import { IMessage, INode, INodeData, INodeParams, MemoryMethods, MessageType, ICommonObject } from '../../../src/Interface'
+import { normalizeZepMemoryMessages } from './ZepMemoryMessages'
 import {
     convertBaseMessagetoIMessage,
     getBaseClasses,
@@ -155,7 +156,12 @@ class ZepMemoryExtended extends ZepMemory implements MemoryMethods {
         if (overrideSessionId) {
             this.sessionId = overrideSessionId
         }
-        return super.loadMemoryVariables({ ...values, lastN: this.lastN })
+        const variables = await super.loadMemoryVariables({ ...values, lastN: this.lastN })
+        const messages = variables[this.memoryKey]
+        if (this.returnMessages && Array.isArray(messages)) {
+            return { ...variables, [this.memoryKey]: normalizeZepMemoryMessages(messages) }
+        }
+        return variables
     }
 
     async saveContext(inputValues: InputValues, outputValues: OutputValues, overrideSessionId = ''): Promise<void> {

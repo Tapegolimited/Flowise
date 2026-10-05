@@ -32,6 +32,21 @@ describe('server-bound UTF-8 source attachment contract', () => {
     it.each(['marked-test-result.txt', 'learning-material-and-mcq.txt'])('decodes exact UTF-8 source bytes for %s', (name) => {
         expect(decodeTobyBoundSourceUpload({ ...upload, name }).equals(Buffer.from(text))).toBe(true)
     })
+    it('preserves CRLF and trailing whitespace within the source body', () => {
+        const body = 'TOBY SOURCE PACK\nQuestion:\r\nCafé 🧬\r\nAnswer: halves.  \t\r\n'
+        expect(
+            decodeTobyBoundSourceUpload({ ...upload, data: 'data:text/plain;base64,' + Buffer.from(body).toString('base64') }).equals(
+                Buffer.from(body)
+            )
+        ).toBe(true)
+    })
+    it('accepts the exact 196608-byte boundary without truncation', () => {
+        const prefix = Buffer.from('TOBY SOURCE PACK\n')
+        const bytes = Buffer.concat([prefix, Buffer.alloc(196608 - prefix.length, 'x')])
+        expect(decodeTobyBoundSourceUpload({ ...upload, data: 'data:text/plain;base64,' + bytes.toString('base64') }).equals(bytes)).toBe(
+            true
+        )
+    })
     it.each([
         { name: '../marked-test-result.txt' },
         { type: 'url' },
@@ -41,6 +56,7 @@ describe('server-bound UTF-8 source attachment contract', () => {
         { data: 'https://example.invalid/file.txt' },
         { data: 'data:text/plain;base64,' + Buffer.from('TOBY SOURCE PACK\n\0').toString('base64') },
         { data: 'data:text/plain;base64,' + Buffer.from([0xff, 0xfe]).toString('base64') },
+        { data: 'data:text/plain;base64,' + Buffer.from('\uFEFF' + text).toString('base64') },
         { data: 'data:text/plain;base64,' },
         { data: 'data:text/plain;base64,' + Buffer.from('Not a source pack').toString('base64') }
     ])('rejects malformed or non-source bytes without substituting text', (change) => {

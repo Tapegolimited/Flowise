@@ -45,13 +45,16 @@ node packages/server/test-toby-bound-source-native.cjs
 git diff --check
 ```
 
-The focused Jest suites pass 45 checks. The native fixture passes 32 checks using
+The focused Jest suites pass 48 checks. The native fixture passes 43 checks using
 the actual compiled `executeFlow`, native local storage, File loader and history
 reader. Its only replacements are offline database persistence, telemetry and
 the ending model node. It verifies exact accented/emoji UTF-8 model input,
 provider/canonical separation, one-file first use and resume, history readback,
 same-byte retry, immutable changed-byte versions, foreign-provider exclusion,
-and unflagged full-file compatibility. It makes zero model calls and zero live
+and mixed/unflagged full-file compatibility. Together the fixtures check the exact
+196608-byte boundary, BOM rejection, CRLF/trailing whitespace preservation, and
+native quota/storage/loader/changed-readback failures stopping before any model
+or message publication, without an encoded-text fallback. It makes zero model calls and zero live
 database writes. Test fixture files are outside the production TypeScript source.
 
 ## Release and remaining runtime proof

@@ -1,43 +1,43 @@
 {
-  "schema": "TobyGeographyCanvasConfigRelease@1.0",
-  "sourceBaseCommit": "ca0d9b329bdd1afe27147216b71a61ffb3b53a14",
-  "releaseDate": "2026-10-06",
-  "releaseType": "Flowise database configuration only",
-  "serverRuntimeChanged": false,
-  "renderDeploymentRequired": false,
-  "productionParentId": "0109979c-e23d-42b8-b87f-411ce36b5940",
-  "referenceParentId": "076230ec-507b-4e7f-a100-512c3e53d032",
-  "referenceQueueToolId": "3e7d6768-f1a3-4c3e-a434-c1ef4df46b89",
-  "referenceQueuePreserved": null,
-  "newQueueToolId": null,
-  "storedQueueName": "queue_canvas_build_geography_teach_me_010_v2",
-  "visibleQueueAlias": "queue_canvas_build_v2",
-  "builderId": "13bb79b6-be3f-4cb2-9765-b17f6332ab6a",
-  "subjectId": "subj-geography",
-  "before": {
-    "queueCodeSha256": "a06e74dd26fcb8a4eca6a7c051728e4e9ab43eade6d04ac01cf965d241ebd8ee",
-    "parentFlowDataSha256": "309a16e82a45de37fae5fe9aa89ccadd345b8ac1d3d00545109fb192e5f6ad56",
-    "builderFlowDataSha256": "bc57aaee20c1ad7f887f739c83dda2099c4ac4b33b7d16dfb990332ade4cac5a"
-  },
-  "expected": {
-    "queueCodeSha256": "9c9fc46b2af72c0f0dc3ee20c5b56de76bd5d6d10b2510b9f18108de0355a42d",
-    "builderFlowDataSha256": "9c65559b774e615104285c590bd492614dd2960e70878a6341dc559b384d8707",
-    "parentFlowDataSha256": null
-  },
-  "liveReadback": {
-    "checkedAt": null,
-    "queueCodeSha256": null,
-    "parentFlowDataSha256": null,
-    "builderFlowDataSha256": null,
-    "analyticsPreserved": null,
-    "otherConfigurationPreserved": null
-  },
-  "validation": {
-    "nodeMajor": 24,
-    "builderOfflineChecks": 28,
-    "queueOfflineChecks": 43,
-    "networkRequestsByTests": 0,
-    "modelPredictionsByTests": 0,
-    "authenticatedLearnerUat": "not performed by offline tests"
-  }
+    "schema": "TobyGeographyCanvasConfigRelease@1.0",
+    "sourceBaseCommit": "ca0d9b329bdd1afe27147216b71a61ffb3b53a14",
+    "releaseDate": "2026-10-06",
+    "releaseType": "Flowise database configuration only",
+    "serverRuntimeChanged": false,
+    "renderDeploymentRequired": false,
+    "productionParentId": "0109979c-e23d-42b8-b87f-411ce36b5940",
+    "referenceParentId": "076230ec-507b-4e7f-a100-512c3e53d032",
+    "referenceQueueToolId": "3e7d6768-f1a3-4c3e-a434-c1ef4df46b89",
+    "referenceQueuePreserved": null,
+    "newQueueToolId": null,
+    "storedQueueName": "queue_canvas_build_geography_teach_me_010_v2",
+    "visibleQueueAlias": "queue_canvas_build_v2",
+    "builderId": "13bb79b6-be3f-4cb2-9765-b17f6332ab6a",
+    "subjectId": "subj-geography",
+    "before": {
+        "queueCodeSha256": "a06e74dd26fcb8a4eca6a7c051728e4e9ab43eade6d04ac01cf965d241ebd8ee",
+        "parentFlowDataSha256": "309a16e82a45de37fae5fe9aa89ccadd345b8ac1d3d00545109fb192e5f6ad56",
+        "builderFlowDataSha256": "bc57aaee20c1ad7f887f739c83dda2099c4ac4b33b7d16dfb990332ade4cac5a"
+    },
+    "expected": {
+        "queueCodeSha256": "9c9fc46b2af72c0f0dc3ee20c5b56de76bd5d6d10b2510b9f18108de0355a42d",
+        "builderFlowDataSha256": "9c65559b774e615104285c590bd492614dd2960e70878a6341dc559b384d8707",
+        "parentFlowDataSha256": null
+    },
+    "liveReadback": {
+        "checkedAt": null,
+        "queueCodeSha256": null,
+        "parentFlowDataSha256": null,
+        "builderFlowDataSha256": null,
+        "analyticsPreserved": null,
+        "otherConfigurationPreserved": null
+    },
+    "validation": {
+        "nodeMajor": 24,
+        "builderOfflineChecks": 28,
+        "queueOfflineChecks": 43,
+        "networkRequestsByTests": 0,
+        "modelPredictionsByTests": 0,
+        "authenticatedLearnerUat": "not performed by offline tests"
+    }
 }

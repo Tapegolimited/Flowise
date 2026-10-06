@@ -1,0 +1,6 @@
+{
+    "id": "0109979c-e23d-42b8-b87f-411ce36b5940",
+    "analytic": "{\"lunary\": {\"status\": true, \"credentialId\": \"synthetic-linked-credential\"}, \"other\": {\"status\": false}}",
+    "updatedDate": "synthetic-parent-metadata",
+    "flowData": "{\"nodes\": [{\"id\": \"synthetic-model\", \"data\": {\"inputs\": {\"modelName\": \"synthetic-model-name\", \"protectedContext\": \"synthetic-no-learner-content\"}}}, {\"id\": \"customTool_queue_canvas_build_v1\", \"data\": {\"inputs\": {\"selectedTool\": \"3e7d6768-f1a3-4c3e-a434-c1ef4df46b89\", \"customToolName\": \"\", \"customToolSchema\": null}}}], \"edges\": [{\"source\": \"synthetic-model\", \"target\": \"customTool_queue_canvas_build_v1\"}], \"viewport\": {\"x\": 0, \"y\": 0, \"zoom\": 1}}"
+}

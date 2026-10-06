@@ -1,0 +1,184 @@
+const asObject = (value) => {
+  if (value && typeof value === 'object') return value;
+  if (typeof value !== 'string') return {};
+  try { return JSON.parse(value.trim()); } catch (_) { return {}; }
+};
+const clean = (value, max) => {
+  const text = value === undefined || value === null ? '' : String(value);
+  const normalized = text
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/[\u0000-\u001F\u007F]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return max ? normalized.slice(0, max) : normalized;
+};
+const safeArray = (value, maxItems, maxLength) => Array.isArray(value)
+  ? value.map((item) => clean(item, maxLength)).filter(Boolean).slice(0, maxItems)
+  : [];
+let incoming = asObject($webhookBody);
+if (incoming.body && typeof incoming.body === 'object') incoming = incoming.body;
+if ((!incoming.operationId || !incoming.runtimeContext) && $flow.input) {
+  const fromInput = asObject($flow.input);
+  if (fromInput.body && typeof fromInput.body === 'object') incoming = fromInput.body;
+  else if (fromInput.operationId) incoming = fromInput;
+}
+const runtime = asObject(incoming.runtimeContext);
+const brief = asObject(incoming.documentBrief);
+const evidence = asObject(brief.evidenceSummary);
+const learner = asObject(runtime.learnerContext);
+const launch = asObject(runtime.launchContext);
+const curriculum = asObject(runtime.curriculumContext);
+const memoryScope = asObject(incoming.memoryScope);
+const allowedAssessment = ['none','informal_check','tracked_question_block'];
+const allowedContinuation = ['new','follow_up_append','replacement_append'];
+
+// No inferred source content, silent truncation or model-owned format authority.
+let semanticValidationCode = '';
+let substantiveContent = brief.substantiveContent;
+if (Array.isArray(substantiveContent)) {
+  if (!substantiveContent.length) semanticValidationCode = 'missing_required_input';
+  else if (substantiveContent.some(source => !source || typeof source !== 'object' || Array.isArray(source)
+      || typeof (source.source_id || source.id) !== 'string' || !(source.source_id || source.id).trim()
+      || typeof (source.text ?? source.content) !== 'string' || !(source.text ?? source.content).trim())) semanticValidationCode = 'invalid_substantive_content';
+} else if (typeof substantiveContent !== 'string' || !substantiveContent.trim()) semanticValidationCode = 'missing_required_input';
+const normalizedSuggestions = [];
+if (brief.planningSuggestions !== undefined && brief.planningSuggestions !== null) {
+  if (!Array.isArray(brief.planningSuggestions)) semanticValidationCode = semanticValidationCode || 'invalid_planning_suggestions';
+  else for (const value of brief.planningSuggestions) {
+    const suggestion = typeof value === 'string' ? value : value && typeof value === 'object' && !Array.isArray(value) ? value.suggestion : '';
+    if (typeof suggestion !== 'string' || !suggestion.trim()) {semanticValidationCode = semanticValidationCode || 'invalid_planning_suggestions';break;}
+    const row = {suggestion,status:'advisory'};
+    if (value && typeof value === 'object' && typeof value.rationale === 'string') row.rationale = value.rationale;
+    normalizedSuggestions.push(row);
+  }
+}
+let normalizedStudentFormat = null;
+if (brief.requestedDocumentType) {
+  const request = brief.requestedDocumentType, provenance = request.provenance;
+  const quote = provenance && provenance.quote;
+  if (typeof request.value !== 'string' || !request.value.trim() || !provenance || provenance.source !== 'student' || provenance.explicit !== true
+      || typeof quote !== 'string' || !quote.trim()
+      || !clean(runtime.currentLearnerRequest).includes(clean(quote))
+      || !clean(quote).toLowerCase().includes(clean(request.value).toLowerCase())) semanticValidationCode = semanticValidationCode || 'invalid_explicit_student_format';
+  else normalizedStudentFormat = {value:request.value,provenance:{source:'student',explicit:true,quote}};
+}
+
+const byteSize = Buffer.byteLength(JSON.stringify(incoming || {}), 'utf8');
+let isValid = true;
+let validationCode = 'accepted';
+if (byteSize > 16384) {
+  isValid = false; validationCode = 'context_too_large';
+} else if (clean(incoming.schemaVersion) !== '1.0') {
+  isValid = false; validationCode = 'unsupported_schema_version';
+} else if (clean(incoming.parentChatflowId) !== '076230ec-507b-4e7f-a100-512c3e53d032') {
+  isValid = false; validationCode = 'invalid_parent_chatflow';
+} else if (!clean(incoming.operationId) || !clean(incoming.parentSessionId) || !clean(incoming.agentflowSessionId)) {
+  isValid = false; validationCode = 'missing_session_scope';
+} else if (clean(incoming.chatId) !== clean(incoming.agentflowSessionId) || clean(incoming.sessionId) !== clean(incoming.agentflowSessionId)) {
+  isValid = false; validationCode = 'agentflow_session_mismatch';
+} else if (clean(runtime.sessionId) !== clean(incoming.parentSessionId)) {
+  isValid = false; validationCode = 'session_scope_mismatch';
+} else if (clean($flow.sessionId) !== clean(incoming.agentflowSessionId)) {
+  isValid = false; validationCode = 'runtime_agentflow_session_mismatch';
+} else if (!clean(runtime.userID)) {
+  isValid = false; validationCode = 'missing_user_id';
+} else if (!clean(runtime.subjectId)) {
+  isValid = false; validationCode = 'missing_subject_id';
+} else if (clean(runtime.subjectId) !== 'subj-geography') {
+  isValid = false; validationCode = 'subject_scope_mismatch';
+} else if (!clean(brief.objective) || !clean(brief.outcome) || !clean(brief.scopeQuery) || semanticValidationCode) {
+  isValid = false; validationCode = semanticValidationCode || 'invalid_document_brief';
+} else if (!allowedAssessment.includes(clean(brief.assessmentIntent).toLowerCase())) {
+  isValid = false; validationCode = 'invalid_assessment_intent';
+} else if (!allowedContinuation.includes(clean(brief.continuationIntent || 'new').toLowerCase())) {
+  isValid = false; validationCode = 'invalid_continuation_intent';
+} else if (
+  clean($flow.state && $flow.state.operationId) === clean(incoming.operationId) &&
+  ['processing','validated','sent','not_sent','delivery_unconfirmed'].includes(clean($flow.state && $flow.state.operationStatus))
+) {
+  isValid = false; validationCode = 'duplicate_operation';
+}
+const normalizedLearner = {
+  name: clean(learner.name, 120),
+  role: clean(learner.role, 120),
+  learningStyle: clean(learner.learningStyle, 500),
+  userStrengths: clean(learner.userStrengths, 1000),
+  userWeaknesses: clean(learner.userWeaknesses, 1000),
+  tutoringAdvice: clean(learner.tutoringAdvice, 1200),
+  promptText: clean(learner.promptText, 1200)
+};
+const normalizedLaunch = {
+  initialMsg: clean(launch.initialMsg, 4096),
+  curriculumContext: {
+    board: clean(curriculum.board, 120),
+    tier: clean(curriculum.tier, 120),
+    specification: clean(curriculum.specification, 200),
+    proficiency: clean(curriculum.proficiency, 500)
+  }
+};
+const normalizedEvidence = {
+  known: safeArray(evidence.known, 10, 240),
+  uncertain: safeArray(evidence.uncertain, 10, 240),
+  mistakes: safeArray(evidence.mistakes, 10, 240),
+  source: clean(evidence.source || 'chat', 40),
+  recency: clean(evidence.recency || 'current', 40)
+};
+const normalizedBrief = {
+  plannerVersion:'2.0.0',
+  outcome: clean(brief.outcome, 900),
+  substantiveContent,
+  planningSuggestions:normalizedSuggestions,
+  mode:"Teach Me",
+  plannerOwnership:'agent',
+  requestedRepresentationsStatus:'advisory',
+  ...(normalizedStudentFormat ? {requestedDocumentType:normalizedStudentFormat} : {}),
+  objective: clean(brief.objective, 900),
+  titleHint: clean(brief.titleHint, 160),
+  scopeQuery: clean(brief.scopeQuery, 300),
+  evidenceSummary: normalizedEvidence,
+  assessmentIntent: clean(brief.assessmentIntent, 40).toLowerCase(),
+  questionCount: Number.isFinite(Number(brief.questionCount)) ? Math.max(0, Math.min(15, Math.trunc(Number(brief.questionCount)))) : 0,
+  requestedRepresentations: safeArray(brief.requestedRepresentations, 10, 60),
+  continuationIntent: clean(brief.continuationIntent || 'new', 40).toLowerCase()
+};
+const finalOutcome = JSON.stringify({
+  event_type: 'canvas_delivery_outcome',
+  audience: 'toby_internal',
+  operation_id: clean(incoming.operationId, 80),
+  delivery_outcome: 'not_sent',
+  stage: 'request_validation',
+  validation_code: validationCode,
+  suppress_user_echo: true,
+  instruction: 'For your information. Do not repeat this to the learner. Use it only as evidence of the Canvas delivery outcome.'
+});
+return {
+  isValid: isValid ? 'true' : 'false',
+  validationCode,
+  operationId: clean(incoming.operationId, 80),
+  parentChatflowId: clean(incoming.parentChatflowId, 80),
+  parentSessionId: clean(incoming.parentSessionId, 180),
+  agentflowSessionId: clean(incoming.agentflowSessionId, 280),
+  userID: clean(runtime.userID, 180),
+  subjectId: clean(runtime.subjectId, 120),
+  learnerContext: JSON.stringify(normalizedLearner),
+  launchContext: JSON.stringify(normalizedLaunch),
+  evidenceContext: JSON.stringify(normalizedEvidence),
+  artifactContext: JSON.stringify({ continuationIntent: normalizedBrief.continuationIntent }),
+  runtimeContext: JSON.stringify({
+    sessionId: clean(runtime.sessionId, 180),
+    userID: clean(runtime.userID, 180),
+    subjectId: clean(runtime.subjectId, 120),
+    currentLearnerRequest: clean(runtime.currentLearnerRequest, 2000)
+  }),
+  memoryScope: JSON.stringify({
+    user_id: clean(memoryScope.user_id, 180),
+    subject_id: clean(memoryScope.subject_id, 120),
+    session_id: clean(memoryScope.session_id, 180),
+    scope_signature: clean(memoryScope.scope_signature, 300),
+    valid: memoryScope.valid === true
+  }),
+  documentBrief: JSON.stringify(normalizedBrief),
+  scopeQuery: normalizedBrief.scopeQuery,
+  operationStatus: isValid ? 'processing' : (validationCode === 'duplicate_operation' ? clean($flow.state.operationStatus) : 'not_sent'),
+  finalOutcome: isValid ? '{}' : finalOutcome
+};

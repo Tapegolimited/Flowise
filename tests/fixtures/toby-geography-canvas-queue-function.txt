@@ -1,0 +1,277 @@
+const fetch = require('node-fetch');
+const crypto = require('crypto');
+
+const vars = typeof $vars === 'object' && $vars ? $vars : {};
+const flow = typeof $flow === 'object' && $flow ? $flow : {};
+const input = {
+  objective: typeof $objective === 'undefined' ? undefined : $objective,
+  outcome: typeof $outcome === 'undefined' ? undefined : $outcome,
+  substantiveContent: typeof $substantiveContent === 'undefined' ? undefined : $substantiveContent,
+  planningSuggestions: typeof $planningSuggestions === 'undefined' ? undefined : $planningSuggestions,
+  explicitStudentDocumentType: typeof $explicitStudentDocumentType === 'undefined' ? undefined : $explicitStudentDocumentType,
+  exactStudentRequestQuote: typeof $exactStudentRequestQuote === 'undefined' ? undefined : $exactStudentRequestQuote,
+  titleHint: typeof $titleHint === 'undefined' ? undefined : $titleHint,
+  scopeQuery: typeof $scopeQuery === 'undefined' ? undefined : $scopeQuery,
+  knownEvidence: typeof $knownEvidence === 'undefined' ? undefined : $knownEvidence,
+  uncertainEvidence: typeof $uncertainEvidence === 'undefined' ? undefined : $uncertainEvidence,
+  mistakeEvidence: typeof $mistakeEvidence === 'undefined' ? undefined : $mistakeEvidence,
+  evidenceSource: typeof $evidenceSource === 'undefined' ? undefined : $evidenceSource,
+  evidenceRecency: typeof $evidenceRecency === 'undefined' ? undefined : $evidenceRecency,
+  assessmentIntent: typeof $assessmentIntent === 'undefined' ? undefined : $assessmentIntent,
+  questionCount: typeof $questionCount === 'undefined' ? undefined : $questionCount,
+  requestedRepresentations: typeof $requestedRepresentations === 'undefined' ? undefined : $requestedRepresentations,
+  continuationIntent: typeof $continuationIntent === 'undefined' ? undefined : $continuationIntent
+};
+const queueEnabled = ['true','1','yes'].includes(String(vars.tobyCanvasAgentflowQueueEnabled || '').trim().toLowerCase());
+if (!queueEnabled) {
+  return JSON.stringify({
+    ok: false,
+    accepted: false,
+    code: 'canvas_agentflow_queue_disabled',
+    deliveryState: 'not_queued',
+    retryable: false
+  });
+}
+const clean = (value, max) => {
+  const text = value === undefined || value === null ? '' : String(value);
+  const stripped = text
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return max ? stripped.slice(0, max) : stripped;
+};
+const splitList = (value, maxItems, maxItemLength) => clean(value, maxItems * maxItemLength)
+  .split(/[;\n]+/)
+  .map((item) => clean(item, maxItemLength))
+  .filter(Boolean)
+  .slice(0, maxItems);
+const pick = (...names) => {
+  for (const name of names) {
+    const value = clean(vars[name]);
+    if (value) return value;
+  }
+  return '';
+};
+const objective = clean(input.objective, 900);
+const outcome = clean(input.outcome, 900);
+const scopeQuery = clean(input.scopeQuery, 300);
+const assessmentIntent = clean(input.assessmentIntent, 40).toLowerCase();
+const continuationIntent = clean(input.continuationIntent || 'new', 40).toLowerCase();
+const allowedAssessments = ['none', 'informal_check', 'tracked_question_block'];
+const allowedContinuations = ['new', 'follow_up_append', 'replacement_append'];
+if (!objective || !outcome || !scopeQuery || !allowedAssessments.includes(assessmentIntent)) {
+  return JSON.stringify({ ok: false, accepted: false, code: 'invalid_semantic_brief', deliveryState: 'not_queued' });
+}
+if (!allowedContinuations.includes(continuationIntent)) {
+  return JSON.stringify({ ok: false, accepted: false, code: 'invalid_continuation_intent', deliveryState: 'not_queued' });
+}
+const flowSessionId = clean(flow.sessionId, 180);
+const runtimeSessionId = clean(vars.sessionId, 180);
+if (flowSessionId && runtimeSessionId && flowSessionId !== runtimeSessionId) {
+  return JSON.stringify({ ok: false, accepted: false, code: 'session_scope_mismatch', deliveryState: 'not_queued' });
+}
+const parentSessionId = flowSessionId || runtimeSessionId;
+const userID = pick('userID', 'userid');
+const subjectId = pick('subjectId');
+if (subjectId !== 'subj-geography') return JSON.stringify({ok:false,accepted:false,code:'subject_scope_mismatch',deliveryState:'not_queued'});
+if (!parentSessionId || !userID || !subjectId) {
+  return JSON.stringify({ ok: false, accepted: false, code: 'missing_protected_context', deliveryState: 'not_queued' });
+}
+const operationId = crypto.randomUUID();
+const agentflowSessionId = parentSessionId + ':canvas:' + operationId;
+const requestedAt = new Date().toISOString();
+const rawQuestionCount = Number(input.questionCount || 0);
+const questionCount = Number.isFinite(rawQuestionCount) ? Math.max(0, Math.min(15, Math.trunc(rawQuestionCount))) : 0;
+const currentLearnerRequest = clean(flow.input, 2000);
+const initialMsg = clean(vars.initialMsg, 4096);
+const learnerContext = {
+  name: clean(vars.name, 120),
+  role: clean(vars.role, 120),
+  learningStyle: clean(vars.learningStyle, 500),
+  userStrengths: clean(vars.userStrengths, 1000),
+  userWeaknesses: clean(vars.userWeaknesses, 1000),
+  tutoringAdvice: clean(vars.tutoringAdvice, 1200),
+  promptText: clean(vars.promptText, 1200)
+};
+const curriculumContext = {
+  board: pick('board', 'examBoard', 'exam_board'),
+  tier: pick('tier', 'examTier', 'exam_tier'),
+  specification: pick('specification', 'specificationCode', 'specification_code'),
+  proficiency: pick('proficiency', 'subtopicProficiency', 'subtopic_proficiency')
+};
+
+// Preserve supplied educational content as data. Do not guess a missing source
+// or truncate the substantive brief to fit; the complete envelope has a hard cap.
+const rejectBrief = (code) => JSON.stringify({ok:false,accepted:false,code,deliveryState:'not_queued',retryable:false});
+if (typeof input.substantiveContent !== 'string' || !input.substantiveContent.trim()) return rejectBrief('missing_substantive_content');
+let substantiveContent = input.substantiveContent;
+const substantiveTrimmed = substantiveContent.trim();
+if (substantiveTrimmed.startsWith('[') || substantiveTrimmed.startsWith('"')) {
+  try { substantiveContent = JSON.parse(substantiveTrimmed); } catch (_) { return rejectBrief('invalid_substantive_content_json'); }
+}
+if (Array.isArray(substantiveContent)) {
+  if (!substantiveContent.length || substantiveContent.some(source => !source || typeof source !== 'object' || Array.isArray(source)
+      || typeof (source.source_id || source.id) !== 'string' || !(source.source_id || source.id).trim()
+      || typeof (source.text ?? source.content) !== 'string' || !(source.text ?? source.content).trim())) return rejectBrief('invalid_substantive_source_array');
+} else if (typeof substantiveContent !== 'string' || !substantiveContent.trim()) return rejectBrief('invalid_substantive_content');
+let planningSuggestions = [];
+if (input.planningSuggestions !== undefined && input.planningSuggestions !== null && String(input.planningSuggestions).trim()) {
+  if (typeof input.planningSuggestions !== 'string') return rejectBrief('invalid_planning_suggestions');
+  let suggestions;
+  try { suggestions = JSON.parse(input.planningSuggestions); } catch (_) { return rejectBrief('invalid_planning_suggestions'); }
+  if (!Array.isArray(suggestions)) return rejectBrief('invalid_planning_suggestions');
+  for (const value of suggestions) {
+    const suggestion = typeof value === 'string' ? value : value && typeof value === 'object' && !Array.isArray(value) ? value.suggestion : '';
+    if (typeof suggestion !== 'string' || !suggestion.trim()) return rejectBrief('invalid_planning_suggestions');
+    const row = {suggestion, status:'advisory'};
+    if (value && typeof value === 'object' && typeof value.rationale === 'string') row.rationale = value.rationale;
+    planningSuggestions.push(row);
+  }
+}
+let requestedDocumentType = null;
+const suppliedType = input.explicitStudentDocumentType == null ? '' : input.explicitStudentDocumentType;
+const suppliedQuote = input.exactStudentRequestQuote == null ? '' : input.exactStudentRequestQuote;
+if (suppliedType || suppliedQuote) {
+  if (typeof suppliedType !== 'string' || typeof suppliedQuote !== 'string' || !suppliedType.trim() || !suppliedQuote.trim()
+      || suppliedType.length > 160 || suppliedQuote.length > 4000) return rejectBrief('invalid_explicit_student_format');
+  const exactQuote = suppliedQuote;
+  const rawCurrentInput = typeof flow.input === 'string' ? flow.input : '';
+  if (!rawCurrentInput.includes(exactQuote)) return rejectBrief('student_quote_not_current');
+  const phrase = value => value.toLowerCase().replace(/\s+/g,' ').trim();
+  const normalizedQuote = phrase(exactQuote), typeIndex = normalizedQuote.indexOf(phrase(suppliedType));
+  if (typeIndex < 0) return rejectBrief('student_format_not_in_quote');
+  const formatPrefix = normalizedQuote.slice(0,typeIndex).split(/[.!?;,]/).pop();
+  if (/\b(?:do not|don't|dont|never|without)\b|\b(?:not|no)(?:\s+(?:a|an|another))?\s*$/i.test(formatPrefix)) return rejectBrief('student_format_negated_or_ambiguous');
+  if (!/\b(?:make|create|build|prepare|produce|generate|write|send|give|want|need|please|turn)\b/i.test(exactQuote)) return rejectBrief('student_format_not_explicit');
+  requestedDocumentType = {value:suppliedType.trim(),provenance:{source:'student',explicit:true,quote:exactQuote}};
+}
+
+const documentBrief = {
+  objective,
+  outcome,
+  substantiveContent,
+  planningSuggestions,
+  requestedDocumentType,
+  mode: "Teach Me",
+  plannerOwnership: 'agent',
+  requestedRepresentationsStatus: 'advisory',
+  titleHint: clean(input.titleHint, 160),
+  scopeQuery,
+  evidenceSummary: {
+    known: splitList(input.knownEvidence, 10, 240),
+    uncertain: splitList(input.uncertainEvidence, 10, 240),
+    mistakes: splitList(input.mistakeEvidence, 10, 240),
+    source: clean(input.evidenceSource || 'chat', 40).toLowerCase(),
+    recency: clean(input.evidenceRecency || 'current', 40).toLowerCase()
+  },
+  assessmentIntent,
+  questionCount,
+  requestedRepresentations: clean(input.requestedRepresentations, 500)
+    .split(',')
+    .map((item) => clean(item, 60).toLowerCase())
+    .filter(Boolean)
+    .slice(0, 10),
+  continuationIntent
+};
+const bridgeToken = clean(vars.tutorTodayMemoryBridgeToken);
+const keyedHash = (value) => {
+  let hash = 1469598103934665603n;
+  for (const character of value) {
+    hash = BigInt.asUintN(64, (hash ^ BigInt(character.charCodeAt(0))) * 1099511628211n);
+  }
+  return hash.toString(36);
+};
+let scopeSignature = '';
+if (bridgeToken) {
+  const scopePayload = [userID, subjectId, parentSessionId].join('|');
+  scopeSignature = [
+    keyedHash([bridgeToken, scopePayload, bridgeToken].join('|')),
+    keyedHash([[...bridgeToken].reverse().join(''), scopePayload].join('|'))
+  ].join('.');
+}
+const envelope = {
+  schemaVersion: '1.0',
+  operationId,
+  parentChatflowId: '076230ec-507b-4e7f-a100-512c3e53d032',
+  parentSessionId,
+  agentflowSessionId,
+  chatId: agentflowSessionId,
+  sessionId: agentflowSessionId,
+  runtimeContext: {
+    sessionId: parentSessionId,
+    userID,
+    subjectId,
+    currentLearnerRequest,
+    learnerContext,
+    launchContext: { initialMsg },
+    curriculumContext
+  },
+  documentBrief,
+  memoryScope: {
+    user_id: userID,
+    subject_id: subjectId,
+    session_id: parentSessionId,
+    scope_signature: scopeSignature,
+    valid: Boolean(scopeSignature)
+  },
+  requestedAt
+};
+const body = JSON.stringify(envelope);
+if (Buffer.byteLength(body, 'utf8') > 16384) {
+  return JSON.stringify({ ok: false, accepted: false, code: 'context_too_large', deliveryState: 'not_queued' });
+}
+if(flow.chatflowId&&flow.chatflowId!=='076230ec-507b-4e7f-a100-512c3e53d032')return JSON.stringify({ok:false,accepted:false,code:'parent_scope_mismatch',deliveryState:'not_queued'});
+const webhookUrl = "https://synthetic.invalid/canvas-webhook";
+const webhookSecret = clean(vars.tobyCanvasAgentflowWebhookSecret);
+if (!webhookUrl || !webhookSecret) {
+  return JSON.stringify({ ok: false, accepted: false, code: 'queue_not_configured', deliveryState: 'not_queued' });
+}
+const signature = 'sha256=' + crypto.createHmac('sha256', webhookSecret).update(body).digest('hex');
+const queueStartedAt = Date.now();
+try {
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-Toby-Canvas-Signature': signature
+    },
+    body,
+    timeout: 1900
+  });
+  const text = await response.text();
+  let parsed = {};
+  try { parsed = text ? JSON.parse(text) : {}; } catch (_) {}
+  if (response.status !== 202) {
+    return JSON.stringify({
+      ok: false,
+      accepted: false,
+      code: response.status >= 400 && response.status < 500 ? 'queue_rejected' : 'queue_unconfirmed',
+      deliveryState: response.status >= 400 && response.status < 500 ? 'not_queued' : 'unknown',
+      status: response.status,
+      queueLatencyMs: Date.now() - queueStartedAt,
+      retryable: false
+    });
+  }
+  return JSON.stringify({
+    ok: true,
+    accepted: true,
+    code: 'canvas_build_queued',
+    deliveryState: 'queued',
+    operationId,
+    agentflowSessionId,
+    status: parsed.status || 'PROCESSING',
+    queueLatencyMs: Date.now() - queueStartedAt,
+    retryable: false
+  });
+} catch (error) {
+  return JSON.stringify({
+    ok: false,
+    accepted: false,
+    code: 'queue_unconfirmed',
+    deliveryState: 'unknown',
+    queueLatencyMs: Date.now() - queueStartedAt,
+    retryable: false
+  });
+}

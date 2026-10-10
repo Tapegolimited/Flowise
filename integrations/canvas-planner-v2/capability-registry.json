@@ -1,0 +1,296 @@
+{
+    "registryVersion": "canvas-planner-candidate.v1.visual-extension.1",
+    "availability": "implemented-reader-and-protected-generation",
+    "availabilityBasis": "October 10 source and configured publisher verification: chart families bar, line, area, pie; five relationship designs. Diagram readers are implemented candidates; generation requires server enablement and explicit subject-reviewed template approval.",
+    "scope": "Educational capability selection only. Existing owners compile and validate concrete payloads.",
+    "semanticStyles": ["concept", "example", "caution", "practice", "summary"],
+    "disciplinaryDemands": [
+        "spatial_reasoning",
+        "causal_reasoning",
+        "quantitative_evidence",
+        "symbolic_reasoning",
+        "chemical_structure",
+        "source_evaluation",
+        "textual_analysis",
+        "chronology",
+        "procedural_reasoning",
+        "systems_reasoning"
+    ],
+    "capabilities": [
+        {
+            "id": "prose",
+            "blockType": null,
+            "purposes": ["explain", "define", "connect", "summarise", "analyse_text"],
+            "dataNeeds": ["trusted_content", "consistent_terminology"],
+            "specializedOwner": "Canvas HTML renderer",
+            "interaction": "reading",
+            "assessment": false,
+            "fallback": "shorter_prose",
+            "anchoring": "Connect each representation to surrounding prose; state the question before it and interpret it afterwards."
+        },
+        {
+            "id": "data_chart",
+            "blockType": "chart",
+            "purposes": ["compare", "show_change", "show_relationship", "show_distribution", "show_uncertainty", "show_flow"],
+            "families": ["bar", "line", "area", "pie"],
+            "dataNeeds": [
+                "typed_fields_rows",
+                "units",
+                "time_period_if_relevant",
+                "source_or_illustrative_label",
+                "valid_scale",
+                "uncertainty_if_relevant"
+            ],
+            "specializedOwner": "Existing Canvas ChartBlock and canonical chart publication validator; richer VisualSpec families remain reserved for their owner until integration is verified.",
+            "interaction": "Allowlisted inspect, select, zoom or view-data interactions only when they advance the learning purpose.",
+            "assessment": false,
+            "fallback": "data_table",
+            "anchoring": "Name the pattern, comparison or evidence to inspect. Semantic point context uses series, category, value, unit and source row.",
+            "declaredUnverifiedFamilies": [
+                "multi_series",
+                "grouped_bar",
+                "stacked_bar",
+                "scatter",
+                "histogram",
+                "heatmap",
+                "range_band",
+                "error_band",
+                "annotated_chart",
+                "climate_graph",
+                "population_pyramid",
+                "sankey"
+            ]
+        },
+        {
+            "id": "math_graph",
+            "blockType": "jsxgraph",
+            "purposes": ["explore_function", "coordinate_reasoning", "mathematical_construction", "compare_representations"],
+            "dataNeeds": ["verified_function_or_coordinates", "domain", "scale", "mathematical_assumptions"],
+            "specializedOwner": "JSXGraph contract/compiler",
+            "interaction": "bounded_mathematical_exploration",
+            "assessment": false,
+            "fallback": "math_notation",
+            "anchoring": "State what changes, what stays invariant and what the learner should predict or observe; never pass executable model code."
+        },
+        {
+            "id": "spatial_map",
+            "blockType": "map",
+            "purposes": ["locate", "compare_place", "spatial_pattern", "interpret_spatial_evidence"],
+            "dataNeeds": ["verified_locations_or_geometry", "extent", "legend_if_needed", "source", "scale_or_resolution"],
+            "specializedOwner": "Map/Leaflet and approved statistical-map compiler",
+            "interaction": "bounded_spatial_exploration",
+            "assessment": false,
+            "fallback": "image",
+            "anchoring": "Direct attention to a location, distribution, spatial relationship or map limitation; decorative maps are unnecessary."
+        },
+        {
+            "id": "relationship_visual",
+            "blockType": "learning_visual",
+            "purposes": ["organise_concepts", "explain_causality", "explain_feedback", "weigh_evidence", "reason_about_probability"],
+            "families": ["concept_tree", "causal_network", "feedback_loop", "evidence_map", "probability_tree"],
+            "dataNeeds": [
+                "authored_nodes_relations",
+                "relationship_labels",
+                "qualification_or_assumptions",
+                "verified_counts_for_probability"
+            ],
+            "specializedOwner": "Shared learning-visual contract and deterministic renderer",
+            "interaction": "local_exploration",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Use the matching relationship grammar. Explain a specific branch, link, comparison or limitation. Exploration is not evidence of mastery."
+        },
+        {
+            "id": "template_diagram",
+            "blockType": "diagram",
+            "purposes": [
+                "inspect_structure",
+                "visualise_geometric_inputs",
+                "reason_about_forces",
+                "connect_particle_model_and_observation"
+            ],
+            "families": [
+                "math.area.rectangle",
+                "math.area.triangle",
+                "math.area.trapezium",
+                "physics.forces.single_object",
+                "chemistry.particle.states",
+                "biology.cell.animal",
+                "biology.cell.plant"
+            ],
+            "dataNeeds": [
+                "verified_template_parameters",
+                "subject_reviewed_template_version",
+                "explicit_variant",
+                "nearby_orientation_and_teaching_purpose"
+            ],
+            "specializedOwner": "Shared pinned Toby diagram template catalogue and deterministic SVG renderer",
+            "generationGate": "protected_server_feature_and_review_approval",
+            "interaction": "inspect_expand",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Use supplied quantities only. Hint/blank suppress labels in visuals and accessible text; Homework is scaffolded, active independent assessment has no visual coaching. Never compute a final area or produce arbitrary SVG."
+        },
+        {
+            "id": "chemical_structure",
+            "blockType": "ketcher",
+            "purposes": ["inspect_structure", "compare_molecules", "explore_reaction", "edit_structure"],
+            "formats": ["smiles", "molfile", "rxn", "ket"],
+            "dataNeeds": ["verified_structure", "view_or_edit_intent", "caption_or_alt", "chemical_assumptions"],
+            "specializedOwner": "Ketcher chemistry contract and owned Canvas save route",
+            "interaction": "inspection_or_exploratory_edit; saved edits preserve KET layout",
+            "assessment": false,
+            "fallback": "image",
+            "anchoring": "Point to the relevant atom, bond, group or reaction change. A saved structure is not automatically an assessed answer."
+        },
+        {
+            "id": "image",
+            "blockType": "image",
+            "purposes": ["anchor_explanation", "observe_feature", "compare_examples", "interpret_diagram"],
+            "dataNeeds": ["purpose_matched_verified_asset", "alt", "caption", "licence_or_credits_if_required", "fit_cover_or_contain"],
+            "specializedOwner": "Canvas image renderer and approved image acquisition",
+            "interaction": "inspect_expand",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "State what to notice and tie labels or visible features to the explanation. Keep important diagram detail visible."
+        },
+        {
+            "id": "image_gallery",
+            "blockType": "image",
+            "purposes": ["compare_examples", "show_sequence", "contrast_features"],
+            "dataNeeds": ["2_to_4_distinct_verified_assets", "individual_teaching_roles", "numbered_matching_key", "alt_and_credits"],
+            "specializedOwner": "Canvas bento image renderer",
+            "interaction": "inspect_expand",
+            "assessment": false,
+            "fallback": "image",
+            "anchoring": "Reference numbered images from surrounding prose; keep captions brief and comparison explicit. Do not fill a gallery quota."
+        },
+        {
+            "id": "math_notation",
+            "blockType": "latex",
+            "purposes": ["express_symbolic_relationship", "show_calculation", "connect_equation_and_meaning"],
+            "dataNeeds": ["verified_expression", "defined_symbols", "units_if_relevant"],
+            "specializedOwner": "KaTeX/approved maths rendering contract",
+            "interaction": "reading",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Define unfamiliar symbols and connect the expression to the example, diagram or physical meaning."
+        },
+        {
+            "id": "stepper",
+            "blockType": "stepper",
+            "purposes": ["worked_example", "guided_process", "staged_reasoning"],
+            "dataNeeds": ["ordered_reasoning_steps", "step_titles", "explanation_of_why"],
+            "specializedOwner": "Canvas stepper renderer",
+            "interaction": "staged_reveal",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Each step advances the same reasoning chain. Use prose instead for a short argument that gains nothing from staged reveal."
+        },
+        {
+            "id": "mcq",
+            "blockType": "mcq",
+            "purposes": ["instant_check", "misconception_check", "retrieval"],
+            "dataNeeds": ["clear_stem", "plausible_options", "correct_answer", "explanatory_feedback"],
+            "specializedOwner": "Canvas self-marking MCQ renderer",
+            "interaction": "instant_local_feedback",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Check the taught objective; distractors should reveal meaningful misunderstandings rather than tricks."
+        },
+        {
+            "id": "question",
+            "blockType": "question",
+            "purposes": ["submitted_practice", "mixed_question_activity", "ordering_task", "open_response"],
+            "dataNeeds": ["canonical_positive_subtopic_id", "question_items", "appropriate_response_type", "review_or_marking_intent"],
+            "specializedOwner": "Question Block and controlled WordPress assessment routes",
+            "interaction": "explicit_submission",
+            "assessment": true,
+            "fallback": "mcq",
+            "fallbackCondition": "Only if instant self-check still meets the objective; never silently substitute when tracked assessment is required.",
+            "anchoring": "Say what the student must submit and which learning objective it checks. Never invent curriculum identifiers."
+        },
+        {
+            "id": "data_table",
+            "blockType": "table",
+            "purposes": ["exact_values", "compare_attributes", "organise_evidence", "accessible_chart_equivalent"],
+            "dataNeeds": ["headers", "consistent_rows", "units_and_source_if_relevant"],
+            "specializedOwner": "Canvas table renderer",
+            "interaction": "reading_expand_if_useful",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Explain the comparison or value to inspect. Do not add a table that only repeats nearby prose."
+        },
+        {
+            "id": "video",
+            "blockType": "video",
+            "purposes": ["observe_dynamic_process", "study_demonstration", "interpret_visual_explanation"],
+            "dataNeeds": [
+                "purpose_matched_verified_video",
+                "ideal_video_brief",
+                "relevant_segment_or_duration",
+                "source_and_playback_contract",
+                "caption_or_text_equivalent"
+            ],
+            "specializedOwner": "Checked video discovery and Canvas video renderer",
+            "interaction": "playback_and_discussion",
+            "assessment": false,
+            "fallback": "stepper",
+            "anchoring": "Give a specific viewing question and connect the observed moment to the document. A fallback must preserve the teaching purpose."
+        },
+        {
+            "id": "callout",
+            "blockType": "callout",
+            "purposes": ["highlight_misconception", "qualify_evidence", "state_key_takeaway", "give_hint"],
+            "dataNeeds": ["concise_meaningful_content", "appropriate_semantic_variant"],
+            "specializedOwner": "Canvas callout renderer",
+            "interaction": "reading",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Use sparingly for information whose role differs from the main explanation."
+        },
+        {
+            "id": "pdf",
+            "blockType": "pdf",
+            "purposes": ["optional_educational_reading", "optional_academic_reading", "optional_past_paper_practice"],
+            "dataNeeds": ["verified_document", "page_or_location", "student_task", "accessible_equivalent"],
+            "specializedOwner": "Canvas PDF viewer",
+            "interaction": "inspect_expand",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Keep the main document self-contained. Give optional reading/practice a specific purpose and page/task. Keenable discovers links and Gemini reviews actual accessible content for level and usefulness. Drop unavailable, unsuitable or late PDFs cleanly, including optional headings and references; never replace missing reading with invented content."
+        },
+        {
+            "id": "next_action",
+            "blockType": "cta",
+            "purposes": ["continue_practice", "revisit_prerequisite", "move_to_approved_activity"],
+            "dataNeeds": ["trusted_existing_destination", "objective_compatible_action"],
+            "specializedOwner": "Canvas CTA and trusted WordPress routes",
+            "interaction": "explicit_navigation",
+            "assessment": false,
+            "fallback": "prose",
+            "anchoring": "Explain why the next action follows from this document; do not invent links."
+        }
+    ],
+    "presentation": {
+        "expansion": "Shared opt-in/default expansion preserves the same block instance, local state and document position; maps and mathematical graphs retain their resize adapters.",
+        "layout": "Use the existing semantic shell, heading hierarchy, reading order and responsive layouts. No arbitrary CSS or executable visual code.",
+        "state": "Separate local exploration, semantic conversational events, owned chemistry saves and explicit assessed submissions.",
+        "budgets": {
+            "maximumBlocks": 24,
+            "maximumDocumentUtf8Bytes": 40000,
+            "maximumLearningVisuals": 2,
+            "maximumLearningVisualUtf8Bytes": 12000,
+            "maximumDiagrams": 2,
+            "maximumDiagramUtf8Bytes": 12000
+        }
+    },
+    "sourceSessions": [
+        "01a0446a-8101-7751-9895-51f68f0ea004",
+        "01a0ddf4-78e9-7341-901d-1f3c8ff59917",
+        "01a0de01-4522-72d0-93b6-69d4f4d0ff1f",
+        "01a0436f-4ea1-7231-90a6-a423395484e3",
+        "01a0f92f-2754-7cb0-b2da-77953f3d1f65",
+        "01a0f95b-a1f7-7553-9eab-926d2bacfe3d"
+    ]
+}

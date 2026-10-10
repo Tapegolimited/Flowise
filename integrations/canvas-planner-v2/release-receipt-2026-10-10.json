@@ -1,0 +1,277 @@
+{
+    "checkedAt": "2026-10-10T14:09:58.867Z",
+    "passed": true,
+    "release": "2026-10-10-v4",
+    "scope": "Live configuration PUT and independent GET readback. No prediction in this operator.",
+    "appliedAt": "2026-10-10T14:07:27.671Z",
+    "counts": {
+        "builder": 4,
+        "tool": 18,
+        "parent": 18
+    },
+    "changed": 40,
+    "verified": 40,
+    "metadataPreserved": true,
+    "parentApiConfigIncluded": true,
+    "results": [
+        {
+            "kind": "builder",
+            "id": "13bb79b6-be3f-4cb2-9765-b17f6332ab6a",
+            "sha256": "ae759c43157c6c421e23fa866ce56bc9b8b2aa41ba52babe5843afc6950c919b",
+            "changed": false
+        },
+        {
+            "kind": "builder",
+            "id": "b2456bcb-e9fe-4635-9ea9-382dafb7622f",
+            "sha256": "45bc5a6d4bdf9acd263ce2f266407a2b04c7def2f73e45f37a3f155f48d57471",
+            "changed": false
+        },
+        {
+            "kind": "builder",
+            "id": "e06122e4-dd96-4f4e-a86e-cea6ae900c1c",
+            "sha256": "7ad5901a0c33a9c5b1cbb544888a4c690bd479fcfbd24ca2ea65884474c7bc57",
+            "changed": false
+        },
+        {
+            "kind": "builder",
+            "id": "3f3a191f-b392-46d0-92d5-66e9acd66c87",
+            "sha256": "e1ae3545066129b871eb1fd6e57f1f9a7e0d8570c13845242075cf1b3fdf7348",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "76cea97a-3950-4a33-b216-bdecae0a52c4",
+            "sha256": "02f30f3cf7098c32805f414aa8af35d766ab00fc4bbd9f7d44208904be498c87",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "deda4dbe-f8ca-4271-a8e9-9df270bff289",
+            "sha256": "ffdbe4b511b8808926417a6a88946f5a6321829a2bcf3d698b3052e29d794511",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "bae46ecd-5911-4f33-97cd-b8883e2ad41c",
+            "sha256": "e22720603032127560bbeea28686c0b4ac03a556d06210b08c3174103c8478fa",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "cf23bd6c-9b06-492e-828d-72e85ec7d569",
+            "sha256": "c2c56d747c4565c37ca7beb9a1927c4bd22c83c6a0a3f028678f06961bf26724",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "a2e31f46-1fe9-4314-8cc5-7456ba26b19f",
+            "sha256": "e9cd18ec90b2bdc802a0a6471eb3b4f3d53843714edff2729416cb7117b0128a",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "19bf71b9-34e4-4299-9b83-aaa5b075f80f",
+            "sha256": "b558373db75768ed97d8b950fa2d24bd6d344fc985f5e7fec283518f940fdae0",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "91e0b442-e636-4efd-a211-9d794fbdb170",
+            "sha256": "8f5ee82c5ee822a3317d9d7fbe3178fe87b6f017851665502bad1e082645e25b",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "1a783406-dd3e-47a4-a68b-1691c2455b6e",
+            "sha256": "2eac9807fffac1c9f31117baa4658cea174142665e711cbbbacf1b15ba09bf05",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "d84b8a60-1466-4269-8edd-b470a3415b30",
+            "sha256": "d854df0d27bf55651d332ae91f1d6f49bd47cad9390c3791c042d41fef262259",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "d6f32d84-306e-47a4-9110-6f30b1256127",
+            "sha256": "a043f60e32f16c83b4cf4a29ec54f707053d1c575ff92a023d35b3a0a469f35a",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "a3e9a4c8-b44d-4949-b7ba-83b5b1065dc0",
+            "sha256": "566bfa1a476664ed55feb22c696d93d25c65639abd99b9b46aeb5018b0fc9b78",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "589a759e-d61d-4d49-94d8-281aef4f6b2d",
+            "sha256": "47d5e71bdf7f1688ee55d571911dfe1bfcd5a058d944b04fc595ea2157b5f9b0",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "ebe684c8-ddc8-466c-bd2e-31fb96bfcc28",
+            "sha256": "6046c6b4a877fa2b88ae7ddb571607082374d402bd8e524b2e20bab4038737e4",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "291cb4df-96d0-45e8-81c3-5ab9270129af",
+            "sha256": "9dcee0b869c9f611146cdd0c3f3bbb0f30629b9e7a1a74eb09e9f12b34c1fd61",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "612bb75c-246a-4440-bfaa-72f1fbb51800",
+            "sha256": "bf2b7b485a814ccb1b3cb1a8635dcb161089076d95c75b1d72f6d4d5b78326b4",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "89ee73dd-7d11-443b-8015-2267a657e573",
+            "sha256": "0e876f523a99e87df766f39e7229b2c6c0ac870fc034c3d47a8a79618b558144",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "aaf2ece9-db07-448f-afe2-8030b8bffc69",
+            "sha256": "4f64b31ae18a2aaa6c64ceea6b33ff3bdebaf83f91c621aa8b377bc13f67ca9a",
+            "changed": false
+        },
+        {
+            "kind": "tool",
+            "id": "3e7d6768-f1a3-4c3e-a434-c1ef4df46b89",
+            "sha256": "358237ab75873d0da1bac55131a7bfb1950bcbb9757aba6115a10bb114bf70bb",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "088c31b4-01e1-44e8-b3b2-e01fbde9dd1a",
+            "sha256": "4847eba7ebdb096423a632c8ad416fcb6d6b793ceb1c1dbfd68f21d8478d815e",
+            "apiConfigSha256": "0ebecb2eab521380b87c52ff286fd0d066ec540baadeae12d565e320610c8319",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "31bc7334-c343-416a-a21d-3207dfeccdfe",
+            "sha256": "03296ef0b9f71dff33182da3a790cc8d1fd2962190acdae1e82bf5080ce06209",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "f47bde05-7e10-4c27-acd4-2014d5333369",
+            "sha256": "8e68f4a2032ba51a3f0c04a8b0bda195f004bba4d1974704598e5ae07951ee15",
+            "apiConfigSha256": "0ebecb2eab521380b87c52ff286fd0d066ec540baadeae12d565e320610c8319",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "9f0d3a5d-8ca6-4c37-9c2a-be0b0c0066f1",
+            "sha256": "3b067b344686e817378559cf3af78391637a786915539290516e5ca6f0a0aad0",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "1441be63-31ad-46cf-8cde-96ed3713f1b5",
+            "sha256": "b6ed7db0371fe0f895489ac6505386bc9226d073317238784c028c9d71eecf2d",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "1ef4bf82-66d5-4720-bf8f-86d82283ca24",
+            "sha256": "81190dde49f33c3fca2eae0f8edb74d09df00d24d218c1f3bfa069b4624be04e",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "be8a714c-7021-49d8-86f4-d8f47a670286",
+            "sha256": "c57712a9de6fe70cb6980a9911a1e50b38c0da1492e74d291bb536530698b6ac",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "056ec4f4-2c94-4ce7-b90a-8e268c92750a",
+            "sha256": "9708a7922f3dd934ebe43a31373b657ac1787d09e034de50b78aba0a0d2c4a0d",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "ab6fbead-b9e3-443f-a1e3-4c388391885e",
+            "sha256": "45080311f5a7d845b74290332ea2b667da678e02e828098c80ea4751596097f0",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "76862940-494a-44d0-8a42-760f92cbbd7b",
+            "sha256": "4edd25eb0e424f20b788f956240cd24dbecdb11eb4a4c45e84ee4666ec120b2f",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "7be14fef-5d63-4202-8a32-d5aa7311d2f7",
+            "sha256": "e253ccbc03bb0b4db432e753fdbd9aa39cedce2520e5b5a1a06930834db7aa6a",
+            "apiConfigSha256": "19bcf3edb0e0ce48adbc4d31836fe9909c402db15b67eb153cd7f2c838b8859a",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "ac3d569d-9ee8-4185-8fc2-e44604c4e720",
+            "sha256": "20721c6fc1c119e48b6bca5840d9d996a9eb47ca5f439e098fa93e417c497dc5",
+            "apiConfigSha256": "0ebecb2eab521380b87c52ff286fd0d066ec540baadeae12d565e320610c8319",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "75b77fd2-8c46-4c95-9d3c-f11ab33754b1",
+            "sha256": "c279606523c9d3b83276d940cb4fcb761d7ed3173625462b94acdb2474475a96",
+            "apiConfigSha256": "0ebecb2eab521380b87c52ff286fd0d066ec540baadeae12d565e320610c8319",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "a231bb5d-5d2e-4950-804a-3e93f4d28ab2",
+            "sha256": "d18fb3f68ea5eee4298eda9ab4e7ccd2e154c4b737f313d41ea4bd1b6292873e",
+            "apiConfigSha256": "0ebecb2eab521380b87c52ff286fd0d066ec540baadeae12d565e320610c8319",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "af8a4f26-6214-4a40-9bf1-e8b070116ddb",
+            "sha256": "72aa5e69849d7c4dfa9e821f3e991b984968b83921dc50296324b83d5a9b689b",
+            "apiConfigSha256": "0ebecb2eab521380b87c52ff286fd0d066ec540baadeae12d565e320610c8319",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "f072b1d0-f9f0-4bdb-888b-f9b390aeacfd",
+            "sha256": "e277dc41839daf4cc73cd615086e0c5036af864f6e879dc4a2adc7b17e4cb31d",
+            "apiConfigSha256": "0ebecb2eab521380b87c52ff286fd0d066ec540baadeae12d565e320610c8319",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "683e32cb-2e3f-4101-b740-e1aabb7bb448",
+            "sha256": "7611c635bf4a1411ce2baf8a62d4fd77e401ea19dc261da9c7ab6e70c49e2c23",
+            "apiConfigSha256": "83993a5010dc68285b233334b5e16b50cb90490b6b81d232189d450ee32db07e",
+            "changed": false
+        },
+        {
+            "kind": "parent",
+            "id": "076230ec-507b-4e7f-a100-512c3e53d032",
+            "sha256": "a2057692c8b90bf41ca8ffa04df2627ec19dcfe0db6b1f62b3b24814d03283cb",
+            "apiConfigSha256": "f0d318e006f891c480590df51703b65fb791ca9b29aa0a5eed696c38d2a4e614",
+            "changed": false
+        }
+    ],
+    "privateDefinitionsIncluded": false
+}

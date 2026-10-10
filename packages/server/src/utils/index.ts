@@ -1036,6 +1036,19 @@ export const resolveVariables = async (
 ): Promise<INodeData> => {
     let flowNodeData = cloneDeep(reactFlowNodeData)
 
+    // This protected prompt slot is not a database global. Use only the value
+    // already filtered by replaceInputsWithConfig and its explicit runtime gate.
+    // Leave all other node-local $vars resolution unchanged.
+    const visualName = 'tobyDiagramAuthoringGuidance'
+    const visualPermission = variableOverrides.find(
+        (entry) => entry.name === visualName && entry.enabled === true && entry.type === 'runtime'
+    )
+    const visualValue = flowNodeData.inputs?.vars?.[visualName]
+    const visualFlowConfig =
+        visualPermission && typeof visualValue === 'string'
+            ? { ...flowConfig, vars: { ...(flowConfig?.vars ?? {}), [visualName]: visualValue } }
+            : flowConfig
+
     const getParamValues = async (paramsObj: ICommonObject) => {
         for (const key in paramsObj) {
             const paramValue: string = paramsObj[key]
@@ -1048,7 +1061,7 @@ export const resolveVariables = async (
                         question,
                         chatHistory,
                         undefined,
-                        flowConfig,
+                        visualFlowConfig,
                         uploadedFilesContent,
                         availableVariables,
                         variableOverrides
@@ -1064,7 +1077,7 @@ export const resolveVariables = async (
                     question,
                     chatHistory,
                     isAcceptVariable,
-                    flowConfig,
+                    visualFlowConfig,
                     uploadedFilesContent,
                     availableVariables,
                     variableOverrides

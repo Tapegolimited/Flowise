@@ -4,6 +4,7 @@ import OpenAI from 'openai'
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js'
 import { Readable } from 'node:stream'
 import type { ReadableStream } from 'node:stream/web'
+import { safeVisualSpeechText } from './safeVisualSpeechText'
 
 const TextToSpeechType = {
     OPENAI_TTS: 'openai',
@@ -27,6 +28,7 @@ export const convertTextToSpeechStream = async (
             reject(new Error('TTS generation aborted'))
             return
         }
+        const speechText = safeVisualSpeechText(text)
         const processStream = async () => {
             try {
                 if (textToSpeechConfig) {
@@ -55,7 +57,7 @@ export const convertTextToSpeechStream = async (
                                         | 'onyx'
                                         | 'sage'
                                         | 'shimmer',
-                                    input: text,
+                                    input: speechText,
                                     response_format: 'mp3'
                                 },
                                 {
@@ -84,7 +86,7 @@ export const convertTextToSpeechStream = async (
                             const response = await client.textToSpeech.stream(
                                 textToSpeechConfig.voice || '21m00Tcm4TlvDq8ikWAM',
                                 {
-                                    text: text,
+                                    text: speechText,
                                     modelId: 'eleven_multilingual_v2'
                                 },
                                 { abortSignal: abortController.signal }

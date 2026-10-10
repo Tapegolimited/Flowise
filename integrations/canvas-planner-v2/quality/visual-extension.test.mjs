@@ -342,48 +342,52 @@ function functionsFromTypeScript(source, names) {
     new vm.Script(js + '\nObject.assign(exports,{' + names.join(',') + '});').runInNewContext({ exports, process: { env: {} } })
     return exports
 }
-test('fresh current candidate patches preserve every unrelated node/edge and validate all code', { skip: !candidateBase }, () => {
-    const definitions = definitionsFor('builders')
-    for (const definition of definitions) {
-        const original = JSON.parse(definition.flowData),
-            out = extendCurrentBuilder(definition),
-            modified = out.graph
-        assert.deepEqual(modified.edges, original.edges)
-        assert.equal(out.networkWrites, false)
-        for (const node of original.nodes) {
-            const next = modified.nodes.find((n) => n.id === node.id),
-                permitted = out.patches.filter((p) => p.nodeId === node.id).map((p) => p.input)
-            for (const [key, value] of Object.entries(node.data.inputs || {}))
-                if (!permitted.includes(key)) assert.deepEqual(next.data.inputs[key], value, node.id + '.' + key)
+test(
+    'fresh current candidate patches preserve every unrelated node/edge and validate all code',
+    { skip: !candidateBase && !currentSnapshot },
+    () => {
+        const definitions = definitionsFor('builders')
+        for (const definition of definitions) {
+            const original = JSON.parse(definition.flowData),
+                out = extendCurrentBuilder(definition),
+                modified = out.graph
+            assert.deepEqual(modified.edges, original.edges)
+            assert.equal(out.networkWrites, false)
+            for (const node of original.nodes) {
+                const next = modified.nodes.find((n) => n.id === node.id),
+                    permitted = out.patches.filter((p) => p.nodeId === node.id).map((p) => p.input)
+                for (const [key, value] of Object.entries(node.data.inputs || {}))
+                    if (!permitted.includes(key)) assert.deepEqual(next.data.inputs[key], value, node.id + '.' + key)
+            }
+            for (const patch of out.patches) {
+                const before = original.nodes.find((n) => n.id === patch.nodeId).data.inputs[patch.input]
+                assert.equal(createHash('sha256').update(before).digest('hex'), patch.expectedBeforeSha256)
+            }
+            const broken = structuredClone(definition),
+                g = JSON.parse(broken.flowData)
+            g.nodes = g.nodes.filter((n) => n.id !== 'customFunctionAgentflow_publish')
+            broken.flowData = JSON.stringify(g)
+            assert.throws(() => extendCurrentBuilder(broken))
         }
-        for (const patch of out.patches) {
-            const before = original.nodes.find((n) => n.id === patch.nodeId).data.inputs[patch.input]
-            assert.equal(createHash('sha256').update(before).digest('hex'), patch.expectedBeforeSha256)
+        const tools = definitionsFor('tools'),
+            parents = definitionsFor('parents')
+        assert.equal(tools.length, 18)
+        assert.equal(parents.length, 18)
+        for (const tool of tools)
+            assert.match(
+                extendCurrentQueueTool(tool).patch.value,
+                /protectedVisualCapability: readProtectedVisualCapability\(vars.tobyDiagramCapability\)/
+            )
+        for (const parent of parents) {
+            const patch = extendCurrentParent(parent, tools),
+                graph = JSON.parse(parent.flowData),
+                before = graph.nodes.find((n) => n.id === patch.patches[0].nodeId).data.inputs.systemMessage
+            assert.equal(patch.patches[0].value.slice(0, before.length), before)
+            assert.match(patch.patches[0].value, /\{\{\$vars.tobyDiagramAuthoringGuidance\}\}/)
+            assert.equal(patch.networkWrites, false)
         }
-        const broken = structuredClone(definition),
-            g = JSON.parse(broken.flowData)
-        g.nodes = g.nodes.filter((n) => n.id !== 'customFunctionAgentflow_publish')
-        broken.flowData = JSON.stringify(g)
-        assert.throws(() => extendCurrentBuilder(broken))
     }
-    const tools = definitionsFor('tools'),
-        parents = definitionsFor('parents')
-    assert.equal(tools.length, 18)
-    assert.equal(parents.length, 18)
-    for (const tool of tools)
-        assert.match(
-            extendCurrentQueueTool(tool).patch.value,
-            /protectedVisualCapability: readProtectedVisualCapability\(vars.tobyDiagramCapability\)/
-        )
-    for (const parent of parents) {
-        const patch = extendCurrentParent(parent, tools),
-            graph = JSON.parse(parent.flowData),
-            before = graph.nodes.find((n) => n.id === patch.patches[0].nodeId).data.inputs.systemMessage
-        assert.equal(patch.patches[0].value.slice(0, before.length), before)
-        assert.match(patch.patches[0].value, /\{\{\$vars.tobyDiagramAuthoringGuidance\}\}/)
-        assert.equal(patch.networkWrites, false)
-    }
-})
+)
 test('parent API configs add only the two bounded runtime variables and preserve owned configuration', () => {
     const tools = definitionsFor('tools'),
         parents = definitionsFor('parents')
@@ -494,7 +498,7 @@ test(
 )
 test(
     'actual current publisher validates diagram without acquiring/publishing or changing saved shape',
-    { skip: !candidateBase },
+    { skip: !candidateBase && !currentSnapshot },
     async () => {
         const current = definitionsFor('builders')[0]
         const graph = extendCurrentBuilder(current).graph
@@ -590,7 +594,7 @@ test(
 )
 test(
     'all current queue tools forward only the protected capability and retain bounded authenticated routing',
-    { skip: !candidateBase },
+    { skip: !candidateBase && !currentSnapshot },
     async () => {
         const tools = definitionsFor('tools'),
             parents = definitionsFor('parents'),

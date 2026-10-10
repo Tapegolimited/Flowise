@@ -12,7 +12,7 @@ Use Node 24.15 or later from the repository root; no dependency installation is 
 node --test integrations/canvas-planner-v2/quality/compiler.test.mjs integrations/canvas-planner-v2/quality/visual-extension.test.mjs integrations/canvas-planner-v2/flowise-release.test.mjs
 ```
 
-The source suite runs the actual checked-in Flowise runtime-variable filters and speech filter using Node's TypeScript stripping. Three cases need private deployment definitions and skip explicitly in a clean clone. To exercise all 25 compiler/visual cases, provide `TOBY_VISUAL_CURRENT_DEFINITIONS` pointing to the private `original-definitions.json` and `TOBY_VISUAL_CANDIDATE_BASE` pointing to the private candidate workspace used for publication checks. Optional `TOBY_WORDPRESS_SOURCE` adds PHP descriptor parity. Private snapshots and generated patches must never enter Git.
+The source suite runs the actual checked-in Flowise runtime-variable filters and speech filter using Node's TypeScript stripping. Three cases need private deployment definitions and skip explicitly in a clean clone. To exercise all compiler/visual cases, provide `TOBY_VISUAL_CURRENT_DEFINITIONS` pointing to the private `original-definitions.json` and `TOBY_VISUAL_CANDIDATE_BASE` pointing to the private candidate workspace used for publication checks. Optional `TOBY_WORDPRESS_SOURCE` adds PHP descriptor parity. Private snapshots and generated patches must never enter Git.
 
 ## Fresh-definition release
 

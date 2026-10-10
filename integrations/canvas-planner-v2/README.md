@@ -4,6 +4,10 @@ This directory contains the maintained source for the additive template diagram 
 
 The transforms consume **fresh current definitions**, preserve unrelated metadata and reject missing or changed code anchors. Parent updates include the system prompt and exactly two enabled runtime API variables, `tobyDiagramCapability` and `tobyDiagramAuthoringGuidance`, in the same PUT. Existing variables, node overrides and API override status retain their values. Protected capability forwarding remains inside the authenticated queue/builder path. No global variables, prediction requests, learner records or memory are changed by this tooling.
 
+The server resolver forwards only `tobyDiagramAuthoringGuidance` from already filtered node `inputs.vars` into prompt resolution, and only with explicitly enabled runtime override metadata and a string value. This fixes the case where an undeclared guidance variable was accepted by the API filter but its `{{$vars.tobyDiagramAuthoringGuidance}}` prompt slot remained literal. The initial isolated Maths smoke consequently produced text drawings; a subsequent live model result must be verified separately after deployment. Current denial and empty strings also replace the slot. Other node-local variables retain their previous resolution behaviour. API override status and authenticated authority remain responsibilities of the existing callers/gateway; this resolver does not create globals or grant authoring permission.
+
+Run the actual resolver/API-filter regressions with `cd packages/server && pnpm exec jest src/utils/tobyDiagramGuidance.test.ts --runInBand`. Reverting the resolver change restores the prior behaviour; generation should remain gated while its prompt slot is unresolved.
+
 ## Checks
 
 Use Node 24.15 or later from the repository root; no dependency installation is required for these checks:

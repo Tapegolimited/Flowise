@@ -16,6 +16,27 @@ import {
 import { CAPABILITY_REGISTRY, buildCandidatePlannerPrompt } from '../candidate-planner.mjs'
 import { compilePlan } from '../compiler.mjs'
 import { extendCurrentBuilder, extendCurrentQueueTool, extendCurrentParent } from '../diagram-candidate-extension.mjs'
+import { bundleModules } from '../bundle.mjs'
+
+test('formatted module closure compiles as a Flowise function without imports or file reads', () => {
+    const code = bundleModules(
+        [
+            'diagram-descriptor.generated.mjs',
+            'visual-capability.mjs',
+            'candidate-planner.mjs',
+            'candidate-planner-v2.mjs',
+            'compile-candidate.mjs',
+            '../toby-youtube-v1/video-brief.mjs',
+            'compiler.mjs',
+            'provider.mjs'
+        ],
+        { CAPABILITY_REGISTRY }
+    )
+    assert.doesNotMatch(code, /^import\s/m)
+    assert.doesNotMatch(code, /import\.meta|\breadFileSync\(/)
+    const context = vm.createContext({})
+    new vm.Script('(function(){' + code + '; return typeof compilePlan})()').runInContext(context)
+})
 
 const read = (url) => JSON.parse(readFileSync(url, 'utf8'))
 const catalogue = read(new URL('../catalogue.json', import.meta.url))

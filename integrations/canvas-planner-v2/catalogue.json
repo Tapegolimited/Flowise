@@ -1,0 +1,1226 @@
+{
+    "playbookCatalogue": [
+        {
+            "id": "textbook_section",
+            "version": "2.0.0",
+            "situation": "The learner needs a durable, rich, textbook-like section that teaches a coherent body of knowledge for later reference.",
+            "avoidWhen": "The learner needs one correction, a short hint, retrieval practice or an assessment.",
+            "assessmentPolicy": "No tracked Question Block by default. When an informal MCQ block is planned, use a purposeful 3-5 question set rather than a single token question.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "foundation",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "explain_and_check",
+            "version": "2.0.0",
+            "situation": "A key idea needs a clear explanation, misconception repair and a bounded informal check of 5-10 questions.",
+            "avoidWhen": "The learner needs a formal tracked test, a large reference chapter or only one diagnostic question.",
+            "assessmentPolicy": "Informal MCQ by default, normally 5-10 questions in one final MCQ block. A tracked Question Block is allowed only when explicitly requested and canonically verified.",
+            "tokenMin": 0,
+            "tokenMax": 6,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "discrimination",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "micro_test",
+            "version": "2.0.0",
+            "situation": "The learner explicitly needs a short, in-class-style tracked test of 10-15 questions.",
+            "avoidWhen": "Canonical subtopic resolution is unverified or the learner needs teaching before assessment.",
+            "assessmentPolicy": "Exactly one final tracked Question Block, 10-15 questions, approximately 60% entry-to-build and 40% build-to-peak.",
+            "tokenMin": 0,
+            "tokenMax": 5,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "retrieval",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "foundation_bridge",
+            "version": "2.0.0",
+            "situation": "A missing prerequisite prevents progress on the learner's current objective.",
+            "avoidWhen": "The obstacle is a misconception within the current concept rather than a prerequisite gap.",
+            "assessmentPolicy": "Informal readiness checks only unless a tracked assessment is explicitly requested and verified.",
+            "tokenMin": 0,
+            "tokenMax": 5,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "foundation",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "mistake_clinic",
+            "version": "2.0.0",
+            "situation": "There is concrete evidence of a conceptual, procedural or exam-technique error to diagnose and repair.",
+            "avoidWhen": "No actual mistake evidence exists or the learner simply needs first teaching.",
+            "assessmentPolicy": "Informal retry by default; tracked only when explicitly requested and verified.",
+            "tokenMin": 0,
+            "tokenMax": 6,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "discrimination",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "worked_example_ladder",
+            "version": "2.0.0",
+            "situation": "The learner benefits from modelling followed by deliberately faded support and an independent attempt.",
+            "avoidWhen": "The task is pure recall or the learner already demonstrates the complete method.",
+            "assessmentPolicy": "Independent attempt is informal unless explicit tracked intent is verified.",
+            "tokenMin": 0,
+            "tokenMax": 7,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "foundation",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "revision_retrieval_pack",
+            "version": "2.0.0",
+            "situation": "The learner needs a durable revision resource combining organisation, retrieval and correction.",
+            "avoidWhen": "The learner needs first teaching or a formal timed assessment.",
+            "assessmentPolicy": "Informal retrieval by default.",
+            "tokenMin": 0,
+            "tokenMax": 7,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "retrieval",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "exam_response_workshop",
+            "version": "2.0.0",
+            "situation": "The learner needs to understand question demand, response anatomy and how to improve an exam-style answer.",
+            "avoidWhen": "The learner is in a live independent assessment or only needs content recall.",
+            "assessmentPolicy": "Tracked only when explicitly requested and canonically verified.",
+            "tokenMin": 0,
+            "tokenMax": 7,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "family": "expression",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "concept_comparison_studio",
+            "version": "2.0.0",
+            "family": "discrimination",
+            "situation": "Distinguish easily confused concepts by explicit criteria and varied borderline examples, then justify classifications.",
+            "avoidWhen": "Not simply a list of definitions.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "model_exploration_lab",
+            "version": "2.0.0",
+            "family": "investigation",
+            "situation": "Predict, vary a controlled feature in a valid model, observe and explain, stating model assumptions and limits.",
+            "avoidWhen": "Do not substitute click exploration for explanation or assessment.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "data_interpretation_lab",
+            "version": "2.0.0",
+            "family": "evidence",
+            "situation": "Read and interpret supplied quantitative data; connect values, trends, anomalies and uncertainty to a justified conclusion.",
+            "avoidWhen": "Do not invent observations or treat correlation as causation.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "practical_investigation",
+            "version": "2.0.0",
+            "family": "investigation",
+            "situation": "Plan or evaluate a practical enquiry with a testable question, variables, measurement choices, supplied safety constraints, analysis and limitations.",
+            "avoidWhen": "Not a generic video explanation or an unverified school safety protocol.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "source_enquiry",
+            "version": "2.0.0",
+            "family": "evidence",
+            "situation": "Interrogate supplied sources through provenance, contextual reading and corroboration; distinguish what each can establish.",
+            "avoidWhen": "Do not infer factual reliability from an image or a topic label.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "argument_evidence_workshop",
+            "version": "2.0.0",
+            "family": "expression",
+            "situation": "Construct and examine claims, evidence and warrants; consider counter-evidence and qualify an argument while preserving learner authorship.",
+            "avoidWhen": "Not a completed assessed essay or a hierarchy that invents support links.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "close_reading_studio",
+            "version": "2.0.0",
+            "family": "expression",
+            "situation": "Read a supplied short text closely; connect exact words and structure to plausible effects and alternative interpretations.",
+            "avoidWhen": "Do not invent quotations, intentions or an entire model answer.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "composition_studio",
+            "version": "2.0.0",
+            "family": "expression",
+            "situation": "Make writing choices for audience, purpose and form; use bounded models, learner drafting and purposeful revision.",
+            "avoidWhen": "Not an answer-completion service for Smart Homework.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "visual_fieldguide",
+            "version": "2.0.0",
+            "family": "representation",
+            "situation": "Use labelled verified visual examples to identify observable features, compare cases and apply distinctions to a new example.",
+            "avoidWhen": "Images must let the learner infer something; no decorative galleries.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "case_enquiry",
+            "version": "2.0.0",
+            "family": "evidence",
+            "situation": "Investigate a bounded case at the correct place, time and scale; connect drivers, evidence, impacts and responses to a judgement.",
+            "avoidWhen": "Do not make a generic topic summary look like verified case evidence.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "spatial_reasoning",
+            "version": "2.0.0",
+            "family": "representation",
+            "situation": "Interpret map conventions and scale, locate and compare spatial patterns, and use spatial evidence to explain or evaluate.",
+            "avoidWhen": "Do not invent coordinates or rely on a photograph for spatial relationships.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "systems_scenarios",
+            "version": "2.0.0",
+            "family": "investigation",
+            "situation": "Trace an interacting qualitative system, compare bounded changes and explain consequences and limits; numeric simulation requires a supplied model.",
+            "avoidWhen": "No invented quantitative causal strengths or misleading energy-flow counts.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "structure_function",
+            "version": "2.0.0",
+            "family": "representation",
+            "situation": "Connect visible structure at a stated scale to a mechanism, function and constraint, using appropriate biological, physical or chemical representations.",
+            "avoidWhen": "A molecule diagram cannot stand in for a cell or a folded enzyme.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "multi_representation_bridge",
+            "version": "2.0.0",
+            "family": "representation",
+            "situation": "Translate the same idea across two representations, expose correspondences and non-equivalences, then choose a representation for a task.",
+            "avoidWhen": "No unconnected collection of charts, equations and diagrams.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "decision_dilemma",
+            "version": "2.0.0",
+            "family": "evidence",
+            "situation": "Compare realistic options using stated criteria, supplied evidence and tradeoffs; justify and revisit a decision.",
+            "avoidWhen": "Not a single predetermined answer or an ungrounded pros-and-cons list.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "oral_rehearsal",
+            "version": "2.0.0",
+            "family": "expression",
+            "situation": "Prepare a learner to explain or defend an idea aloud using concise cues, probing questions, revision and self-check.",
+            "avoidWhen": "No assumed speech-recognition capability or automatic proficiency from rehearsal.",
+            "assessmentPolicy": "Exploration and informal checks are local. Explicit assessment only through a separately validated Question Block with canonical resolution. Preserve learner authorship.",
+            "tokenMin": 0,
+            "tokenMax": 8,
+            "qualityRequirements": {
+                "purpose": "Representations need distinct educational purposes and explicit what-to-notice guidance. No diversity quota or count padding."
+            },
+            "sourceVersion": "research-1"
+        }
+    ],
+    "formationCatalogue": [
+        {
+            "id": "concept_led",
+            "playbookId": "textbook_section",
+            "version": "2.0.0",
+            "situation": "Several related concepts must be built into one coherent mental model.",
+            "requiredSectionSequence": [
+                "orientation",
+                "core_concepts",
+                "developed_explanation",
+                "worked_or_applied_example",
+                "connections",
+                "summary"
+            ],
+            "evidenceRequirements": ["Use external evidence only when the stimulus is necessary and verified."],
+            "closingPurpose": "Synthesis of the main model, its connections and one retrieval prompt.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "process_system",
+            "playbookId": "textbook_section",
+            "version": "2.0.0",
+            "situation": "A process, cycle or interacting system must be understood in stages and as a whole.",
+            "requiredSectionSequence": [
+                "orientation",
+                "system_overview",
+                "process_stages",
+                "cause_and_effect",
+                "applied_example",
+                "summary"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Synthesis of the main model, its connections and one retrieval prompt.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "evidence_case_study",
+            "playbookId": "textbook_section",
+            "version": "2.0.0",
+            "situation": "The learner must connect a concept to verified evidence or a case study.",
+            "requiredSectionSequence": ["orientation", "concept_frame", "evidence_context", "evidence_analysis", "application", "summary"],
+            "evidenceRequirements": ["Use external evidence only when the stimulus is necessary and verified."],
+            "closingPurpose": "Synthesis of the main model, its connections and one retrieval prompt.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "misconception_repair",
+            "playbookId": "explain_and_check",
+            "version": "2.0.0",
+            "situation": "Evidence shows one or more specific misconceptions.",
+            "requiredSectionSequence": [
+                "learning_focus",
+                "correct_model",
+                "misconception_contrast",
+                "worked_application",
+                "guided_check",
+                "summary"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Correct model, easily confused contrast and a concise understanding check.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "compare_distinguish",
+            "playbookId": "explain_and_check",
+            "version": "2.0.0",
+            "situation": "The learner confuses two or more similar ideas, terms or methods.",
+            "requiredSectionSequence": ["learning_focus", "shared_features", "critical_differences", "decision_rule", "guided_check"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Correct model, easily confused contrast and a concise understanding check.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "causal_process_chain",
+            "playbookId": "explain_and_check",
+            "version": "2.0.0",
+            "situation": "The learner knows isolated facts but cannot connect cause, mechanism and outcome.",
+            "requiredSectionSequence": ["learning_focus", "starting_conditions", "causal_chain", "break_points", "guided_check"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Correct model, easily confused contrast and a concise understanding check.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "mixed_progressive",
+            "playbookId": "micro_test",
+            "version": "2.0.0",
+            "situation": "A representative mix of knowledge, sequencing and extended application is needed.",
+            "requiredSectionSequence": ["objective_and_conditions", "key_information", "test_preamble", "tracked_question_block"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "The final Question Block closes the document; do not add teaching after it.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "data_stimulus",
+            "playbookId": "micro_test",
+            "version": "2.0.0",
+            "situation": "The test must use a chart, map, image or table as a shared stimulus.",
+            "requiredSectionSequence": ["objective_and_conditions", "stimulus_context", "test_preamble", "tracked_question_block"],
+            "evidenceRequirements": ["Use external evidence only when the stimulus is necessary and verified."],
+            "closingPurpose": "The final Question Block closes the document; do not add teaching after it.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "method_exam_technique",
+            "playbookId": "micro_test",
+            "version": "2.0.0",
+            "situation": "The assessment focuses on a method, working or exam-response technique.",
+            "requiredSectionSequence": ["objective_and_conditions", "method_reminders", "test_preamble", "tracked_question_block"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "The final Question Block closes the document; do not add teaching after it.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "single_prerequisite",
+            "playbookId": "foundation_bridge",
+            "version": "2.0.0",
+            "situation": "One missing idea blocks the target.",
+            "requiredSectionSequence": ["target_link", "prerequisite_model", "guided_bridge", "readiness_check"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Prerequisite-to-target connection and a short readiness decision.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "procedural_prerequisite",
+            "playbookId": "foundation_bridge",
+            "version": "2.0.0",
+            "situation": "The learner needs a missing method or operation.",
+            "requiredSectionSequence": ["target_link", "method_components", "modelled_method", "faded_attempt", "readiness_check"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Prerequisite-to-target connection and a short readiness decision.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "layered_prerequisites",
+            "playbookId": "foundation_bridge",
+            "version": "2.0.0",
+            "situation": "Two or three prerequisites must be reconnected.",
+            "requiredSectionSequence": ["target_link", "prerequisite_map", "layer_one", "layer_two", "integration", "readiness_check"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Prerequisite-to-target connection and a short readiness decision.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "conceptual_misconception",
+            "playbookId": "mistake_clinic",
+            "version": "2.0.0",
+            "situation": "The learner's underlying model is wrong.",
+            "requiredSectionSequence": ["evidence_of_error", "diagnosis", "correct_model", "contrast", "same_family_retry"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "First wrong turn, corrected rule and a same-family retry cue.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "procedural_error",
+            "playbookId": "mistake_clinic",
+            "version": "2.0.0",
+            "situation": "The learner knows the idea but applies a method incorrectly.",
+            "requiredSectionSequence": ["evidence_of_error", "first_wrong_step", "corrected_method", "faded_retry", "checklist"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "First wrong turn, corrected rule and a same-family retry cue.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "exam_technique_error",
+            "playbookId": "mistake_clinic",
+            "version": "2.0.0",
+            "situation": "Marks were lost because the response did not meet the command word, evidence or structure requirement.",
+            "requiredSectionSequence": ["evidence_of_error", "question_demand", "mark_loss", "improved_structure", "same_family_retry"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "First wrong turn, corrected rule and a same-family retry cue.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "modelled_faded_method",
+            "playbookId": "worked_example_ladder",
+            "version": "2.0.0",
+            "situation": "A repeatable method can be shown and faded.",
+            "requiredSectionSequence": [
+                "method_goal",
+                "fully_modelled",
+                "partially_scaffolded",
+                "faded_attempt",
+                "independent_attempt",
+                "reflection"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Method checkpoints, reflection on the fade and independent next step.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "causal_explanation",
+            "playbookId": "worked_example_ladder",
+            "version": "2.0.0",
+            "situation": "The learner must build a multi-link causal explanation.",
+            "requiredSectionSequence": [
+                "explanation_goal",
+                "model_chain",
+                "joint_chain",
+                "prompted_chain",
+                "independent_chain",
+                "reflection"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Method checkpoints, reflection on the fade and independent next step.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "extended_response",
+            "playbookId": "worked_example_ladder",
+            "version": "2.0.0",
+            "situation": "The learner must construct an extended response while retaining authorship.",
+            "requiredSectionSequence": [
+                "response_goal",
+                "model_anatomy",
+                "joint_paragraph",
+                "faded_plan",
+                "independent_response",
+                "self_check"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Method checkpoints, reflection on the fade and independent next step.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "knowledge_organiser",
+            "playbookId": "revision_retrieval_pack",
+            "version": "2.0.0",
+            "situation": "The learner needs one structured overview with retrieval checks.",
+            "requiredSectionSequence": [
+                "revision_scope",
+                "knowledge_structure",
+                "key_connections",
+                "retrieval_round",
+                "correction",
+                "spacing_plan"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "High-signal recap plus a concrete spaced-retrieval action.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "interleaved_concepts",
+            "playbookId": "revision_retrieval_pack",
+            "version": "2.0.0",
+            "situation": "Several related concepts need mixed retrieval and discrimination.",
+            "requiredSectionSequence": [
+                "revision_scope",
+                "concept_map",
+                "interleaved_round_one",
+                "correction",
+                "interleaved_round_two",
+                "spacing_plan"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "High-signal recap plus a concrete spaced-retrieval action.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "personalised_weak_areas",
+            "playbookId": "revision_retrieval_pack",
+            "version": "2.0.0",
+            "situation": "Recent evidence identifies a small set of weak areas.",
+            "requiredSectionSequence": ["revision_scope", "evidence_priorities", "targeted_retrieval", "correction", "repeat_schedule"],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "High-signal recap plus a concrete spaced-retrieval action.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "extended_response",
+            "playbookId": "exam_response_workshop",
+            "version": "2.0.0",
+            "situation": "The learner must plan and construct a longer evaluative or analytical answer.",
+            "requiredSectionSequence": [
+                "question_demand",
+                "success_criteria",
+                "response_anatomy",
+                "guided_plan",
+                "independent_attempt",
+                "self_review"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Response checklist, self-review prompt and independent exam-style action.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "short_explain_describe",
+            "playbookId": "exam_response_workshop",
+            "version": "2.0.0",
+            "situation": "The learner needs precision on short command-word questions.",
+            "requiredSectionSequence": [
+                "question_demand",
+                "mark_to_content",
+                "model_anatomy",
+                "guided_attempt",
+                "independent_attempt",
+                "self_review"
+            ],
+            "evidenceRequirements": ["Canonical curriculum context and authenticated learner evidence are normally sufficient."],
+            "closingPurpose": "Response checklist, self-review prompt and independent exam-style action.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "source_data_response",
+            "playbookId": "exam_response_workshop",
+            "version": "2.0.0",
+            "situation": "The response must interpret a supplied source, map, image, table or chart.",
+            "requiredSectionSequence": [
+                "question_demand",
+                "source_orientation",
+                "evidence_selection",
+                "response_anatomy",
+                "independent_attempt",
+                "self_review"
+            ],
+            "evidenceRequirements": ["Use external evidence only when the stimulus is necessary and verified."],
+            "closingPurpose": "Response checklist, self-review prompt and independent exam-style action.",
+            "sourceVersion": "1.4.0"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "concept_comparison_studio",
+            "version": "2.0.0",
+            "situation": "Distinguish easily confused concepts by explicit criteria and varied borderline examples, then justify classifications.",
+            "requiredSectionSequence": [
+                "comparison_question",
+                "discriminating_criteria",
+                "paired_examples",
+                "boundary_cases",
+                "justify_and_transfer"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "concept_comparison_studio",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": ["initial_sort", "criteria_model", "contrasting_cases", "revise_sort", "transfer_check"],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "model_exploration_lab",
+            "version": "2.0.0",
+            "situation": "Predict, vary a controlled feature in a valid model, observe and explain, stating model assumptions and limits.",
+            "requiredSectionSequence": [
+                "predict",
+                "model_and_controls",
+                "guided_exploration",
+                "explain_observations",
+                "model_limits",
+                "transfer"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "model_exploration_lab",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "phenomenon",
+                "model_assumptions",
+                "parameter_comparison",
+                "pattern_explanation",
+                "limits_and_check"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "data_interpretation_lab",
+            "version": "2.0.0",
+            "situation": "Read and interpret supplied quantitative data; connect values, trends, anomalies and uncertainty to a justified conclusion.",
+            "requiredSectionSequence": [
+                "enquiry_question",
+                "data_provenance",
+                "read_the_encoding",
+                "compare_patterns",
+                "uncertainty_and_anomalies",
+                "supported_conclusion"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "data_interpretation_lab",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": ["initial_claim", "inspect_evidence", "compare_values", "test_alternatives", "qualified_conclusion"],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "practical_investigation",
+            "version": "2.0.0",
+            "situation": "Plan or evaluate a practical enquiry with a testable question, variables, measurement choices, supplied safety constraints, analysis and limitations.",
+            "requiredSectionSequence": [
+                "question_and_prediction",
+                "variables_and_controls",
+                "method_and_measurement",
+                "evidence_recording",
+                "analysis",
+                "evaluate_and_improve"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "practical_investigation",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "practical_problem",
+                "diagnose_method",
+                "revised_design",
+                "expected_evidence",
+                "limitations_and_check"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "source_enquiry",
+            "version": "2.0.0",
+            "situation": "Interrogate supplied sources through provenance, contextual reading and corroboration; distinguish what each can establish.",
+            "requiredSectionSequence": [
+                "enquiry_question",
+                "source_origin",
+                "close_source_reading",
+                "context_and_corroboration",
+                "limits_and_conflict",
+                "provisional_judgement"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "source_enquiry",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "competing_accounts",
+                "provenance",
+                "compare_claims",
+                "corroborating_evidence",
+                "qualified_judgement"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "argument_evidence_workshop",
+            "version": "2.0.0",
+            "situation": "Construct and examine claims, evidence and warrants; consider counter-evidence and qualify an argument while preserving learner authorship.",
+            "requiredSectionSequence": [
+                "claim_question",
+                "evidence_and_warrants",
+                "alternative_interpretation",
+                "qualify_the_claim",
+                "learner_argument",
+                "review_reasoning"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "argument_evidence_workshop",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "argument_diagnosis",
+                "evidence_selection",
+                "warrant_repair",
+                "counterargument",
+                "revised_argument"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "close_reading_studio",
+            "version": "2.0.0",
+            "situation": "Read a supplied short text closely; connect exact words and structure to plausible effects and alternative interpretations.",
+            "requiredSectionSequence": [
+                "reading_purpose",
+                "supplied_extract",
+                "notice_language_and_structure",
+                "interpret_with_evidence",
+                "alternative_reading",
+                "learner_claim"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "close_reading_studio",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "first_reading",
+                "focused_annotation",
+                "linked_patterns",
+                "interpretive_choice",
+                "supported_response"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "composition_studio",
+            "version": "2.0.0",
+            "situation": "Make writing choices for audience, purpose and form; use bounded models, learner drafting and purposeful revision.",
+            "requiredSectionSequence": [
+                "audience_purpose_form",
+                "bounded_craft_model",
+                "plan_choices",
+                "learner_draft",
+                "revision_focus",
+                "reflect_on_effect"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "composition_studio",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": ["learner_draft", "diagnose_craft", "compare_revisions", "learner_revision", "explain_choices"],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "visual_fieldguide",
+            "version": "2.0.0",
+            "situation": "Use labelled verified visual examples to identify observable features, compare cases and apply distinctions to a new example.",
+            "requiredSectionSequence": [
+                "observation_question",
+                "visual_orientation",
+                "numbered_features",
+                "compare_examples",
+                "classify_new_example",
+                "explain_distinctions"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "visual_fieldguide",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "initial_observation",
+                "reference_examples",
+                "shared_comparison_key",
+                "boundary_example",
+                "transfer_check"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "case_enquiry",
+            "version": "2.0.0",
+            "situation": "Investigate a bounded case at the correct place, time and scale; connect drivers, evidence, impacts and responses to a judgement.",
+            "requiredSectionSequence": [
+                "driving_question",
+                "case_place_time_scale",
+                "drivers_and_processes",
+                "evidence_and_impacts",
+                "responses_and_tradeoffs",
+                "case_judgement"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "case_enquiry",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "case_problem",
+                "evidence_landscape",
+                "causal_explanation",
+                "response_comparison",
+                "qualified_judgement"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "spatial_reasoning",
+            "version": "2.0.0",
+            "situation": "Interpret map conventions and scale, locate and compare spatial patterns, and use spatial evidence to explain or evaluate.",
+            "requiredSectionSequence": [
+                "spatial_question",
+                "map_key_scale",
+                "locate_and_compare",
+                "pattern_and_process",
+                "spatial_explanation",
+                "new_area_transfer"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "spatial_reasoning",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": ["map_orientation", "spatial_pattern", "scale_comparison", "process_connection", "evidence_check"],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "systems_scenarios",
+            "version": "2.0.0",
+            "situation": "Trace an interacting qualitative system, compare bounded changes and explain consequences and limits; numeric simulation requires a supplied model.",
+            "requiredSectionSequence": [
+                "system_boundary",
+                "relationships",
+                "trace_one_change",
+                "compare_scenarios",
+                "explain_consequences",
+                "limits_and_transfer"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "systems_scenarios",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "baseline_system",
+                "perturbation",
+                "feedback_pathways",
+                "scenario_comparison",
+                "qualified_prediction"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "structure_function",
+            "version": "2.0.0",
+            "situation": "Connect visible structure at a stated scale to a mechanism, function and constraint, using appropriate biological, physical or chemical representations.",
+            "requiredSectionSequence": [
+                "function_question",
+                "scale_and_structure",
+                "feature_to_mechanism",
+                "mechanism_to_function",
+                "contrast_and_constraint",
+                "apply_relationship"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "structure_function",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "structure_comparison",
+                "observable_features",
+                "functional_explanation",
+                "constraint_case",
+                "transfer"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "multi_representation_bridge",
+            "version": "2.0.0",
+            "situation": "Translate the same idea across two representations, expose correspondences and non-equivalences, then choose a representation for a task.",
+            "requiredSectionSequence": [
+                "shared_idea",
+                "decode_first_representation",
+                "map_correspondences",
+                "translate_second_representation",
+                "check_equivalence_and_limits",
+                "choose_and_apply"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "multi_representation_bridge",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "translation_problem",
+                "first_model",
+                "correspondence_key",
+                "second_model",
+                "mismatch_and_transfer"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "decision_dilemma",
+            "version": "2.0.0",
+            "situation": "Compare realistic options using stated criteria, supplied evidence and tradeoffs; justify and revisit a decision.",
+            "requiredSectionSequence": [
+                "decision_and_constraints",
+                "criteria",
+                "option_evidence",
+                "tradeoffs_and_uncertainty",
+                "learner_decision",
+                "review_if_conditions_change"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "decision_dilemma",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "initial_choice",
+                "competing_evidence",
+                "criteria_comparison",
+                "sensitivity_to_priorities",
+                "justified_decision"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "enquiry_sequence",
+            "playbookId": "oral_rehearsal",
+            "version": "2.0.0",
+            "situation": "Prepare a learner to explain or defend an idea aloud using concise cues, probing questions, revision and self-check.",
+            "requiredSectionSequence": [
+                "explanation_goal",
+                "compact_cues",
+                "first_rehearsal",
+                "probe_reasoning",
+                "revise_explanation",
+                "self_check"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        },
+        {
+            "id": "guided_transfer",
+            "playbookId": "oral_rehearsal",
+            "version": "2.0.0",
+            "situation": "Start from supplied learner work or a contrasting case; support application and transfer.",
+            "requiredSectionSequence": [
+                "learner_explanation",
+                "diagnostic_prompts",
+                "stronger_connections",
+                "rehearsal_cues",
+                "transfer_explanation"
+            ],
+            "evidenceRequirements": [
+                "Use supplied/verified data and sources; mark illustrative values; do not invent assets or curriculum identifiers."
+            ],
+            "closingPurpose": "Demonstrate the stated outcome through a justified learner explanation, application or decision.",
+            "sourceVersion": "research-1"
+        }
+    ]
+}

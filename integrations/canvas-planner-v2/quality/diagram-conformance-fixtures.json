@@ -1,0 +1,193 @@
+{
+    "benchmarkVersion": "1.0.0",
+    "approvalStatus": "candidate-subject-review-required",
+    "cases": [
+        {
+            "name": "trapezium_labelled",
+            "input": {
+                "v": 1,
+                "t": "math.area.trapezium@1.0.0",
+                "p": {
+                    "a": 6,
+                    "b": 14,
+                    "h": 5,
+                    "u": "cm"
+                },
+                "view": "labelled"
+            }
+        },
+        {
+            "name": "trapezium_hint",
+            "input": {
+                "v": 1,
+                "t": "math.area.trapezium@1.0.0",
+                "p": {
+                    "a": 6,
+                    "b": 14,
+                    "h": 5,
+                    "u": "cm"
+                },
+                "view": "hint"
+            }
+        },
+        {
+            "name": "rectangle_blank",
+            "input": {
+                "v": 1,
+                "t": "math.area.rectangle@1.0.0",
+                "p": {
+                    "w": 4,
+                    "h": 3,
+                    "u": "m"
+                },
+                "view": "blank"
+            }
+        },
+        {
+            "name": "triangle_labelled",
+            "input": {
+                "schemaVersion": 1,
+                "templateId": "math.area.triangle",
+                "templateVersion": "1.0.0",
+                "parameters": {
+                    "base": 8,
+                    "height": 3,
+                    "units": "cm"
+                },
+                "variant": "labelled"
+            }
+        },
+        {
+            "name": "single_object_forces",
+            "input": {
+                "v": 1,
+                "t": "physics.forces.single_object@1.0.0",
+                "p": {
+                    "obj": "A crate",
+                    "f": [
+                        {
+                            "d": "up",
+                            "l": "Normal contact force",
+                            "m": 40,
+                            "u": "N"
+                        },
+                        {
+                            "d": "down",
+                            "l": "Weight",
+                            "m": 40,
+                            "u": "N"
+                        },
+                        {
+                            "d": "right",
+                            "l": "Push",
+                            "m": 15,
+                            "u": "N"
+                        },
+                        {
+                            "d": "left",
+                            "l": "Friction",
+                            "m": 10,
+                            "u": "N"
+                        }
+                    ]
+                },
+                "view": "labelled"
+            }
+        },
+        {
+            "name": "gas_retrieval",
+            "input": {
+                "v": 1,
+                "t": "chemistry.particle.states@1.0.0",
+                "p": {
+                    "s": "gas"
+                },
+                "view": "blank"
+            }
+        },
+        {
+            "name": "solid_labelled",
+            "input": {
+                "v": 1,
+                "t": "chemistry.particle.states@1.0.0",
+                "p": {
+                    "s": "solid"
+                },
+                "view": "labelled"
+            }
+        },
+        {
+            "name": "liquid_labelled",
+            "input": {
+                "v": 1,
+                "t": "chemistry.particle.states@1.0.0",
+                "p": {
+                    "s": "liquid"
+                },
+                "view": "labelled"
+            }
+        },
+        {
+            "name": "plant_labelled",
+            "input": {
+                "v": 1,
+                "t": "biology.cell.plant@1.0.0",
+                "p": {
+                    "l": true,
+                    "hl": ["vacuole"]
+                },
+                "view": "labelled"
+            }
+        },
+        {
+            "name": "animal_hint",
+            "input": {
+                "v": 1,
+                "t": "biology.cell.animal@1.0.0",
+                "p": {
+                    "hl": ["nucleus"]
+                },
+                "view": "hint"
+            }
+        },
+        {
+            "name": "triangle_outside_outline",
+            "input": {
+                "v": 1,
+                "t": "math.area.triangle@1.0.0",
+                "p": {
+                    "b": 8,
+                    "h": 3,
+                    "u": "cm",
+                    "hp": "outside",
+                    "sh": "none"
+                },
+                "view": "labelled"
+            }
+        },
+        {
+            "name": "particle_comparison_blank",
+            "input": {
+                "v": 1,
+                "t": "chemistry.particle.states@1.0.0",
+                "p": {
+                    "s": "solid",
+                    "c": "gas"
+                },
+                "view": "blank"
+            }
+        },
+        {
+            "name": "particle_comparison_labelled",
+            "input": {
+                "v": 1,
+                "t": "chemistry.particle.states@1.0.0",
+                "p": {
+                    "s": "solid",
+                    "c": "liquid"
+                },
+                "view": "labelled"
+            }
+        }
+    ]
+}

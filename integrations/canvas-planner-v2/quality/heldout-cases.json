@@ -1,0 +1,857 @@
+{
+    "schema_version": "CanvasPlannerV2AcceptanceInputs@1.0",
+    "status": "new synthetic held-out implementation acceptance fixtures; no teacher or learner validation claimed",
+    "subject_count": 9,
+    "network_calls_permitted": false,
+    "runtime_identity_policy": "Runner generates fresh synthetic session/widget/document identities outside the model context; never reuse real/current IDs. Publication and memory writes remain disabled.",
+    "cases": [
+        {
+            "id": "H-BIO-01",
+            "subjectId": "subj-biology",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-biology",
+                "topic": "Osmosis and evidence limits",
+                "mode": "Teach Me",
+                "objective": "Explain a mass change using the supplied concentration model while separating model prediction from experimental certainty.",
+                "outcome": "Explain water movement and identify a limitation of this synthetic investigation",
+                "studentRequest": "Create a Canvas document that helps me explain water movement and identify a limitation of this synthetic investigation.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Explains any movement into a cell as active transport."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": "Higher",
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_bio_model",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Two sealed membrane bags contain dilute sucrose (bag A) and concentrated sucrose (bag B). Each is immersed in distilled water. The membrane passes water but not sucrose. Water potential inside B is lower than outside; temperature is approximately constant.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_bio_data",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "After 20 minutes, A changes from 20.0g to 20.8g and B from 20.0g to 22.4g. These are synthetic values. No repeats, instrument resolution or uncertainty are supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_bio_model", "h_bio_data"],
+                "manualAssertions": [
+                    "Explain water movement down a water-potential gradient; distinguish osmosis from active transport.",
+                    "Account for both bags and their difference without inventing instrument uncertainty or experimental repetition.",
+                    "Ask for an independently written explanation and usable feedback; opening a visual is not practical mastery."
+                ],
+                "teacherReviewCompleted": false
+            }
+        },
+        {
+            "id": "H-CHEM-01",
+            "subjectId": "subj-chemistry",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-chemistry",
+                "topic": "Ionic structure and stoichiometry",
+                "mode": "Teach Me",
+                "objective": "Connect ion charges, formula and the balanced reaction without treating ionic crystals as small molecules.",
+                "outcome": "Justify the formula MgCl2 and balance its formation reaction",
+                "studentRequest": "Create a Canvas document that helps me justify the formula mgcl2 and balance its formation reaction.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Writes MgCl and imagines one isolated MgCl2 molecule in the solid."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": "Higher",
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_chem_ions",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Magnesium forms Mg2+ ions; chlorine forms Cl- ions. The ionic solid must be electrically neutral. No molecular structure, lattice image or SMILES is supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_chem_reaction",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Reactants are Mg and HCl; products are MgCl2 and H2. Use atom conservation; no quantities or reaction-rate observations are supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_chem_ions", "h_chem_reaction"],
+                "manualAssertions": [
+                    "Explain why the ion ratio is1:2 and distinguish an extended ionic lattice from a molecule.",
+                    "Balance Mg+2HCl→MgCl2+H2 with a reason for each coefficient.",
+                    "Use a purposeful representation and a new learner explanation; do not invent an approved molecular SMILES for this ionic solid."
+                ],
+                "teacherReviewCompleted": false
+            }
+        },
+        {
+            "id": "H-COMB-01",
+            "subjectId": "subj-combined-sci",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-combined-sci",
+                "topic": "Heating and energy transfer",
+                "mode": "Teach Me",
+                "objective": "Calculate useful transferred energy and efficiency with supplied Foundation-level equations.",
+                "outcome": "Calculate energy and explain why efficiency does not identify a particular loss mechanism",
+                "studentRequest": "Create a Canvas document that helps me calculate energy and explain why efficiency does not identify a particular loss mechanism.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Uses grams directly in a kg-based equation and calls all unaccounted energy friction."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": "Foundation",
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_comb_values",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic heating model: water mass0.20kg; specific heat capacity4200J/(kg°C); temperature rise15°C; input energy15000J. Use E=m c ΔT and efficiency=useful energy/input energy. No apparatus, repeat readings or uncertainties are supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_comb_values"],
+                "manualAssertions": [
+                    "Remain Foundation in objective, assessment metadata and optional resource selection.",
+                    "Obtain12600J useful energy and0.84 or84% efficiency with correct units and substitution.",
+                    "Explain the 2400 J difference without identifying a loss mechanism that the data do not establish.",
+                    "Give a changed-condition calculation and usable feedback."
+                ],
+                "teacherReviewCompleted": false,
+                "calculations": [
+                    {
+                        "id": "useful_energy",
+                        "value": 12600,
+                        "unit": "J",
+                        "tolerance": 0.01
+                    },
+                    {
+                        "id": "efficiency",
+                        "value": 0.84,
+                        "unit": "ratio",
+                        "tolerance": 1e-5
+                    }
+                ]
+            }
+        },
+        {
+            "id": "H-ELANG-01",
+            "subjectId": "subj-english-lang",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-english-lang",
+                "topic": "Persuasive opening revision",
+                "mode": "Smart Homework",
+                "objective": "Coach a revision of the learner draft while preserving learner authorship.",
+                "outcome": "Revise my own opening and explain two choices",
+                "studentRequest": "Create a Canvas document that helps me revise my own opening and explain two choices.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Uses unsupported universal claims and wants the tutor to write the whole answer."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": null,
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_lang_assignment",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Smart Homework task: write a150-word persuasive opening arguing for refill stations at school. The learner must compose the response; no final submit-ready answer may be supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_lang_draft",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic learner draft: We should get refill stations. Plastic bottles are bad. Everyone wastes water and nobody cares. This is important for the school.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_lang_statistic",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "A fictional school survey reports that60% of40respondents buy a disposable bottle during one week. It is a synthetic teaching source, not national research.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_lang_assignment", "h_lang_draft", "h_lang_statistic"],
+                "manualAssertions": [
+                    "Give a diagnostic, bounded example or sentence stem and revision prompts, not a complete150-word response.",
+                    "Retain the learner draft as learner evidence; do not cite it as external factual proof.",
+                    "Keep the survey synthetic and bounded to40respondents; no nationwide inference.",
+                    "Require the learner to write a revision and explain choices."
+                ],
+                "teacherReviewCompleted": false
+            }
+        },
+        {
+            "id": "H-ELIT-01",
+            "subjectId": "subj-english-lit",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-english-lit",
+                "topic": "Unseen imagery and warranted interpretation",
+                "mode": "Teach Me",
+                "objective": "Develop a supported interpretation of the supplied invented extract.",
+                "outcome": "Write a short interpretation using precise words and acknowledge a plausible alternative",
+                "studentRequest": "Create a Canvas document that helps me write a short interpretation using precise words and acknowledge a plausible alternative.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Assumes every mention of light proves happiness and invents author biography."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": null,
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_lit_extract",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Invented unseen poem: The gate kept its iron silence / while morning threaded light through rain. / I left my name beside the latch / and walked the unclaimed road again.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_lit_scope",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "No poet, date, collection, set text or syllabus option is known. This is synthetic unseen-poetry practice, not an authenticated published poem.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_lit_extract", "h_lit_scope"],
+                "manualAssertions": [
+                    "Anchor an interpretation in exact supplied words; allow more than one warranted reading.",
+                    "Do not name an author, set text, publication date or historical intention.",
+                    "Include independently authored paragraph work and feedback, not recognition questions only."
+                ],
+                "teacherReviewCompleted": false
+            }
+        },
+        {
+            "id": "H-GEO-01",
+            "subjectId": "subj-geography",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-geography",
+                "topic": "Flood-risk decision and annual probability",
+                "mode": "Teach Me",
+                "objective": "Weigh supplied flood risk, exposure and cost while explaining probability and source limits.",
+                "outcome": "Defend a protection decision with two evidence-based reasons and a limitation",
+                "studentRequest": "Create a Canvas document that helps me defend a protection decision with two evidence-based reasons and a limitation.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Interprets10%annual probability as a flood exactly once every10years."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": null,
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_geo_risk",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic settlements: Northbridge has120homes with a10%annual flood probability; Southbank has40homes with approximately3.3%annual probability. This is annual risk, not a timetable. No mapped coordinates, property values or event costs are supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_geo_options",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "A barrier for Northbridge costs£120000; wetland work near Southbank costs£50000. Available budget is£130000. Environmental effects are not quantified; no option is established as universally best.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_geo_risk", "h_geo_options"],
+                "manualAssertions": [
+                    "Distinguish annual probability from a regular cycle.",
+                    "Compare both options within the stated budget and acknowledge unquantified environmental effects.",
+                    "Do not invent coordinates, present-day weather, economic damages or certainty of protection.",
+                    "Ask for a justified decision and a revision criterion."
+                ],
+                "teacherReviewCompleted": false
+            }
+        },
+        {
+            "id": "H-MATH-01",
+            "subjectId": "subj-higher-maths",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-higher-maths",
+                "topic": "Conditional probability and replacement",
+                "mode": "Teach Me",
+                "objective": "Explain how replacement changes a two-stage probability.",
+                "outcome": "Calculate both probabilities and explain which factor changes",
+                "studentRequest": "Create a Canvas document that helps me calculate both probabilities and explain which factor changes.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Uses4/9×4/9 for both cases."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": "Higher",
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_math_bag",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "A bag contains4red,3blue and2green counters. Two counters are drawn. Compare caseA: without replacement; caseB: with replacement before the second draw. Find the probability of two red counters in each case. Draws are random; no independence is asserted for caseA.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_math_bag"],
+                "manualAssertions": [
+                    "Use4/9×3/8=1/6 without replacement and4/9×4/9=16/81 with replacement.",
+                    "State why the second numerator and denominator change and when independence is justified.",
+                    "Require a changed-inventory prediction or explanation rather than repeated recognition MCQs."
+                ],
+                "teacherReviewCompleted": false,
+                "calculations": [
+                    {
+                        "id": "without_replacement",
+                        "value": 0.16666666666666666,
+                        "unit": "probability",
+                        "tolerance": 1e-6
+                    },
+                    {
+                        "id": "with_replacement",
+                        "value": 0.19753086419753085,
+                        "unit": "probability",
+                        "tolerance": 1e-6
+                    }
+                ]
+            }
+        },
+        {
+            "id": "H-HIST-01",
+            "subjectId": "subj-history",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-history",
+                "topic": "Conflicting testimony and corroboration",
+                "mode": "Teach Me",
+                "objective": "Compare synthetic testimony without equating viewpoint with uselessness.",
+                "outcome": "Make a qualified judgement about what each source supports",
+                "studentRequest": "Create a Canvas document that helps me make a qualified judgement about what each source supports.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Rejects any biased source as useless and treats three cases as proof about every mill."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": null,
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_hist_source_a",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic sourceA: an1842doctor reports seeing three coughing children leaving a mill and urges shorter shifts. Intended audience: local council; no clinical diagnoses or wider sample are given.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_hist_source_b",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic sourceB: an1842millowner writes to fellow owners that work provides wages and says absences in his mill are rare. No attendance register or inspection is supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                },
+                "requestedDocumentType": {
+                    "value": "source comparison worksheet",
+                    "provenance": {
+                        "source": "student",
+                        "explicit": true,
+                        "quote": "Please make a source comparison worksheet."
+                    }
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "honoured_or_cannot_satisfy",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_hist_source_a", "h_hist_source_b"],
+                "manualAssertions": [
+                    "Keep both sources explicitly synthetic; they do not establish an actual historical event.",
+                    "Branch claims into supported, qualified and unsupported conclusions; describe useful corroboration.",
+                    "Explain the contribution of provenance without binary dismissal.",
+                    "Ask the learner to produce a warranted, qualified judgement."
+                ],
+                "teacherReviewCompleted": false
+            }
+        },
+        {
+            "id": "H-PHYS-01",
+            "subjectId": "subj-physics",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-physics",
+                "topic": "Proportionality and unreported uncertainty",
+                "mode": "Teach Me",
+                "objective": "Use I-V values to judge proportionality while keeping uncertainty and laboratory performance unknown.",
+                "outcome": "Justify the relationship and state two limits of the inference",
+                "studentRequest": "Create a Canvas document that helps me justify the relationship and state two limits of the inference.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": [
+                        "Thinks a rising graph is sufficient for proportionality and no reported error means no error exists."
+                    ],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": "Higher",
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_phys_iv",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic constant-temperature model: voltage/current pairs are(2.0V,0.15A),(4.0V,0.30A),(6.0V,0.45A). These support constant V/I≈13.3Ω for the supplied model. No repeated laboratory readings, instrument uncertainty, heating observations or practical performance are supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_phys_iv"],
+                "manualAssertions": [
+                    "Check a constant ratio and a line through the origin, not merely a rising trend.",
+                    "Unknown uncertainty is not zero and cannot establish absence of laboratory error or heating.",
+                    "Keep synthetic/model data separate from observed laboratory performance and practical mastery.",
+                    "Ask for an explanation, a model prediction and a method limitation."
+                ],
+                "teacherReviewCompleted": false,
+                "calculations": [
+                    {
+                        "id": "resistance",
+                        "value": 13.333333333333334,
+                        "unit": "ohm",
+                        "tolerance": 0.05
+                    }
+                ]
+            }
+        }
+    ],
+    "regression_inputs": [
+        {
+            "id": "R-LIT-CLARIFY",
+            "subjectId": "subj-english-lit",
+            "heldOut": true,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-english-lit",
+                "topic": "Unspecified set text",
+                "mode": "Teach Me",
+                "objective": "Clarify the missing text and goal before constructing a literature document.",
+                "outcome": "Identify which poem or supplied extract I mean",
+                "studentRequest": "Create a Canvas document that helps me identify which poem or supplied extract i mean.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Requests: make a guide for my poem, but supplies neither title nor extract."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": null,
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "absent",
+                "coreDepthRequired": false,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": [],
+                "manualAssertions": ["Ask for the poem/set-text identity or extract; do not invent a text or force a1.5-page document."],
+                "teacherReviewCompleted": false,
+                "disposition": "clarify",
+                "depthExemption": "missing_essential_source"
+            }
+        },
+        {
+            "id": "F-HIST-EXPLICIT",
+            "subjectId": "subj-history",
+            "heldOut": false,
+            "syntheticOnly": true,
+            "context": {
+                "subjectId": "subj-history",
+                "topic": "Conflicting testimony and corroboration",
+                "mode": "Teach Me",
+                "objective": "Compare synthetic testimony without equating viewpoint with uselessness.",
+                "outcome": "Make a qualified judgement about what each source supports",
+                "studentRequest": "Please make a source comparison worksheet. Help me make a qualified judgement about what each source supports.",
+                "timeBudget": "15 minutes",
+                "learnerSignals": {
+                    "observedEvidence": ["Rejects any biased source as useless and treats three cases as proof about every mill."],
+                    "accessContext": "Readable text alternatives and keyboard access; no inferred learning style."
+                },
+                "contextSignals": {
+                    "curriculum": {
+                        "qualification": "GCSE",
+                        "exam_board": "OCR",
+                        "tier": null,
+                        "option": null,
+                        "subtopic_id": null,
+                        "subtopic_resolution": "Unknown in this synthetic fixture; resolve canonically before assessed authoring."
+                    }
+                },
+                "substantiveContent": [
+                    {
+                        "source_id": "h_hist_source_a",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic sourceA: an1842doctor reports seeing three coughing children leaving a mill and urges shorter shifts. Intended audience: local council; no clinical diagnoses or wider sample are given.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    },
+                    {
+                        "source_id": "h_hist_source_b",
+                        "kind": "synthetic_teaching_fixture",
+                        "text": "Synthetic sourceB: an1842millowner writes to fellow owners that work provides wages and says absences in his mill are rare. No attendance register or inspection is supplied.",
+                        "epistemic_status": "synthetic; educational fixture, not an observed classroom event or a real historical source"
+                    }
+                ],
+                "planningSuggestions": [
+                    {
+                        "suggestion": "A compact comparison may help; choose another structure if it serves the objective better.",
+                        "status": "advisory",
+                        "rationale": "Toby offers a teaching suggestion; the planner owns playbook, formation and representation choices."
+                    }
+                ],
+                "canonicalSubtopicId": null,
+                "constraints": {
+                    "standardCoreDepth": {
+                        "readablePages": 1.5,
+                        "selfContained": true,
+                        "optionalMediaCounts": false
+                    },
+                    "publicationAllowed": false,
+                    "syntheticOnly": true
+                },
+                "requestedDocumentType": {
+                    "value": "source comparison worksheet",
+                    "provenance": {
+                        "source": "student",
+                        "explicit": true,
+                        "quote": "Please make a source comparison worksheet."
+                    }
+                }
+            },
+            "expected": {
+                "requestedTypeStatus": "honoured_or_cannot_satisfy",
+                "coreDepthRequired": true,
+                "publicationAllowed": false,
+                "canonicalAssessmentPolicy": "blocked_until_trusted_resolution",
+                "sourceIds": ["h_hist_source_a", "h_hist_source_b"],
+                "manualAssertions": [
+                    "Keep both sources explicitly synthetic; they do not establish an actual historical event.",
+                    "Branch claims into supported, qualified and unsupported conclusions; describe useful corroboration.",
+                    "Explain the contribution of provenance without binary dismissal.",
+                    "Ask the learner to produce a warranted, qualified judgement."
+                ],
+                "teacherReviewCompleted": false
+            },
+            "regressionPurpose": "Positive exact-current-input student format binding; original nine subject fixtures retained unchanged."
+        }
+    ],
+    "regression_contracts": [
+        "Toby advice has no binding requested-format provenance.",
+        "Canonical resolution missing/ambiguous blocks Question authoring and publication; no invented ID or silent MCQ downgrade.",
+        "P03: unreported uncertainty cannot imply no laboratory error.",
+        "M01: one block beyond selected maximum fails; one bounded repair reselects/consolidates purposefully, never adds filler or silently raises a protected limit.",
+        "Standard depth is real reference-render core geometry plus substantive instructional review; PDFs/video/padding do not count.",
+        "Late/unavailable/unreviewed PDF drops before freeze without changing core or leaving tokens/headings/links.",
+        "Smart Homework retains independently authored learner work; exploration/chemistry saves/branch clicks are not assessed proficiency."
+    ]
+}

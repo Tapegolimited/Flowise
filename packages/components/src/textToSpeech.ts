@@ -5,10 +5,12 @@ import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js'
 import { Readable } from 'node:stream'
 import type { ReadableStream } from 'node:stream/web'
 import { safeVisualSpeechText } from './safeVisualSpeechText'
+import { getInworldVoices, streamInworldSpeech } from './inworldTextToSpeech'
 
 const TextToSpeechType = {
     OPENAI_TTS: 'openai',
-    ELEVEN_LABS_TTS: 'elevenlabs'
+    ELEVEN_LABS_TTS: 'elevenlabs',
+    INWORLD_TTS: 'inworld'
 }
 
 export const convertTextToSpeechStream = async (
@@ -36,6 +38,25 @@ export const convertTextToSpeechStream = async (
                     const credentialData = await getCredentialData(credentialId ?? '', options)
 
                     switch (textToSpeechConfig.name) {
+                        case TextToSpeechType.INWORLD_TTS:
+                            await streamInworldSpeech(
+                                speechText,
+                                {
+                                    apiKey: credentialData.inworldApiKey,
+                                    voice: textToSpeechConfig.voice,
+                                    model: textToSpeechConfig.model,
+                                    instruction: textToSpeechConfig.instruction,
+                                    deliveryMode: textToSpeechConfig.deliveryMode,
+                                    speakingRate: textToSpeechConfig.speakingRate
+                                },
+                                abortController.signal,
+                                onStart,
+                                onChunk,
+                                onEnd
+                            )
+                            resolve()
+                            break
+
                         case TextToSpeechType.OPENAI_TTS: {
                             onStart('mp3')
 
@@ -102,6 +123,8 @@ export const convertTextToSpeechStream = async (
                             })
                             break
                         }
+                        default:
+                            throw new Error('Unsupported text-to-speech provider.')
                     }
                 } else {
                     reject(new Error('Text to speech is not selected. Please configure TTS in the chatflow.'))
@@ -204,6 +227,9 @@ export const getVoices = async (provider: string, credentialId: string, options:
     const credentialData = await getCredentialData(credentialId ?? '', options)
 
     switch (provider) {
+        case TextToSpeechType.INWORLD_TTS:
+            return getInworldVoices(credentialData.inworldApiKey)
+
         case TextToSpeechType.OPENAI_TTS:
             return [
                 { id: 'alloy', name: 'Alloy' },

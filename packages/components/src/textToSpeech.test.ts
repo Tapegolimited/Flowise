@@ -6,7 +6,11 @@ const mockOpenAISpeechCreate = jest.fn()
 const mockElevenLabsStream = jest.fn()
 
 jest.mock('./utils', () => ({
-    getCredentialData: jest.fn().mockResolvedValue({ openAIApiKey: 'synthetic-openai-key', elevenLabsApiKey: 'synthetic-elevenlabs-key' })
+    getCredentialData: jest.fn(async () => ({
+        openAIApiKey: 'synthetic-openai-key',
+        elevenLabsApiKey: 'synthetic-elevenlabs-key',
+        inworldApiKey: 'synthetic-inworld-key'
+    }))
 }))
 jest.mock('openai', () => ({
     __esModule: true,
@@ -86,5 +90,34 @@ describe.each(['openai', 'elevenlabs'])('visual speech projection: %s', (provide
         await expect(playback).rejects.toThrow('aborted')
         expect(providerInput()).toBe(expected)
         expect(onEnd).not.toHaveBeenCalled()
+    })
+})
+
+describe('Inworld provider speech projection', () => {
+    it('uses the same safe speech projection as the existing providers and keeps credentials scoped to Inworld', async () => {
+        const originalFetch = global.fetch
+        const fetchMock = jest
+            .fn()
+            .mockResolvedValue(new Response(`${JSON.stringify({ result: { audioContent: Buffer.from('audio').toString('base64') } })}\n`))
+        global.fetch = fetchMock
+        const input = 'Look.\n```toby-diagram\n{"private_value":91}\n```\nExplain.'
+        try {
+            const end = jest.fn()
+            await convertTextToSpeechStream(
+                input,
+                { name: 'inworld', credentialId: 'synthetic-credential', voice: 'catalogue-id' },
+                {},
+                new AbortController(),
+                jest.fn(),
+                jest.fn(),
+                end
+            )
+            expect(JSON.parse(fetchMock.mock.calls[0][1].body).text).toBe('Look.\nVisual.\nExplain.')
+            expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe('Basic synthetic-inworld-key')
+            expect(end).toHaveBeenCalledTimes(1)
+            expect(input).toContain('private_value')
+        } finally {
+            global.fetch = originalFetch
+        }
     })
 })

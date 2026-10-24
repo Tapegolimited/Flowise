@@ -8,7 +8,8 @@ import credentialsService from '../credentials'
 
 export enum TextToSpeechProvider {
     OPENAI = 'openai',
-    ELEVEN_LABS = 'elevenlabs'
+    ELEVEN_LABS = 'elevenlabs',
+    INWORLD = 'inworld'
 }
 
 export interface TTSRequest {
@@ -17,6 +18,9 @@ export interface TTSRequest {
     credentialId: string
     voice?: string
     model?: string
+    instruction?: string
+    deliveryMode?: string
+    speakingRate?: number
 }
 
 export interface TTSResponse {

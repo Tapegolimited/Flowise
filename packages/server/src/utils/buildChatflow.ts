@@ -6,7 +6,6 @@ import { omit, cloneDeep } from 'lodash'
 import {
     IFileUpload,
     convertSpeechToText,
-    convertTextToSpeechStream,
     ICommonObject,
     addSingleFileToStorage,
     generateFollowUpPrompts,
@@ -17,8 +16,7 @@ import {
     getFileFromUpload,
     removeSpecificFileFromUpload,
     EvaluationRunner,
-    handleEscapeCharacters,
-    IServerSideEventStreamer
+    handleEscapeCharacters
 } from 'flowise-components'
 import { StatusCodes } from 'http-status-codes'
 import {
@@ -72,6 +70,7 @@ import { OMIT_QUEUE_JOB_DATA } from './constants'
 import { executeAgentFlow } from './buildAgentflow'
 import { Workspace } from '../enterprise/database/entities/workspace.entity'
 import { Organization } from '../enterprise/database/entities/organization.entity'
+import { generateTTSForResponseStream } from './ttsResponseStream'
 import { getPredictionChatId } from './predictionChatIdentity'
 import { getTobyBoundSourceUpload, prepareTobyBoundSourceUpload } from './tobyBoundSourceFile'
 
@@ -89,57 +88,6 @@ const shouldAutoPlayTTS = (textToSpeechConfig: string | undefined | null): boole
     } catch (error) {
         logger.error(`Error parsing textToSpeechConfig: ${getErrorMessage(error)}`)
         return false
-    }
-}
-
-const generateTTSForResponseStream = async (
-    responseText: string,
-    textToSpeechConfig: string | undefined,
-    options: ICommonObject,
-    chatId: string,
-    chatMessageId: string,
-    sseStreamer: IServerSideEventStreamer,
-    abortController?: AbortController
-): Promise<void> => {
-    try {
-        if (!textToSpeechConfig) return
-        const config = typeof textToSpeechConfig === 'string' ? JSON.parse(textToSpeechConfig) : textToSpeechConfig
-
-        let activeProviderConfig = null
-        for (const providerKey in config) {
-            const provider = config[providerKey]
-            if (provider && provider.status === true) {
-                activeProviderConfig = {
-                    name: providerKey,
-                    credentialId: provider.credentialId,
-                    voice: provider.voice,
-                    model: provider.model
-                }
-                break
-            }
-        }
-
-        if (!activeProviderConfig) return
-
-        await convertTextToSpeechStream(
-            responseText,
-            activeProviderConfig,
-            options,
-            abortController || new AbortController(),
-            (format: string) => {
-                sseStreamer.streamTTSStartEvent(chatId, chatMessageId, format)
-            },
-            (chunk: Buffer) => {
-                const audioBase64 = chunk.toString('base64')
-                sseStreamer.streamTTSDataEvent(chatId, chatMessageId, audioBase64)
-            },
-            () => {
-                sseStreamer.streamTTSEndEvent(chatId, chatMessageId)
-            }
-        )
-    } catch (error) {
-        logger.error(`[server]: TTS streaming failed: ${getErrorMessage(error)}`)
-        sseStreamer.streamTTSEndEvent(chatId, chatMessageId)
     }
 }
 

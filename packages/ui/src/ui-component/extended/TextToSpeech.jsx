@@ -31,6 +31,7 @@ import { Dropdown } from '@/ui-component/dropdown/Dropdown'
 import AudioWaveform from '@/ui-component/extended/AudioWaveform'
 import openAISVG from '@/assets/images/openai.svg'
 import elevenLabsSVG from '@/assets/images/elevenlabs.svg'
+import inworldSVG from '@/assets/images/inworld.svg'
 
 // store
 import useNotifier from '@/utils/useNotifier'
@@ -38,14 +39,77 @@ import useNotifier from '@/utils/useNotifier'
 // API
 import chatflowsApi from '@/api/chatflows'
 import ttsApi from '@/api/tts'
+import { readTtsPreviewAudio } from '@/utils/ttsPreview'
 
 const TextToSpeechType = {
     OPENAI_TTS: 'openai',
-    ELEVEN_LABS_TTS: 'elevenlabs'
+    ELEVEN_LABS_TTS: 'elevenlabs',
+    INWORLD_TTS: 'inworld'
 }
 
 // Weird quirk - the key must match the name property value.
 const textToSpeechProviders = {
+    [TextToSpeechType.INWORLD_TTS]: {
+        label: 'Inworld TTS',
+        name: TextToSpeechType.INWORLD_TTS,
+        icon: inworldSVG,
+        url: 'https://docs.inworld.ai/tts/tts',
+        inputs: [
+            {
+                label: 'Connect Credential',
+                name: 'credential',
+                type: 'credential',
+                credentialNames: ['inworldApi']
+            },
+            {
+                label: 'Model',
+                name: 'model',
+                type: 'options',
+                options: [
+                    { label: 'TTS-2 Flash', name: 'inworld-tts-2-flash' },
+                    { label: 'TTS-2', name: 'inworld-tts-2' }
+                ],
+                default: 'inworld-tts-2-flash',
+                description: 'Flash prioritises speed and cost. Select TTS-2 to direct the voice delivery.'
+            },
+            {
+                label: 'Voice',
+                name: 'voice',
+                type: 'voice_select',
+                description: 'Choose a voice from your Inworld catalogue. Speech uses British English (en-GB).'
+            },
+            {
+                label: 'Speaking rate',
+                name: 'speakingRate',
+                type: 'number',
+                default: 1,
+                step: 0.1,
+                optional: true,
+                description: '0.5 to 1.5. A value of 1 uses the voice’s normal speaking rate.'
+            },
+            {
+                label: 'Voice direction',
+                name: 'instruction',
+                type: 'string',
+                rows: 3,
+                models: ['inworld-tts-2'],
+                optional: true,
+                description: 'In English, describe the delivery, for example: Warm, patient and clearly articulated. Up to 500 characters.'
+            },
+            {
+                label: 'Delivery mode',
+                name: 'deliveryMode',
+                type: 'options',
+                models: ['inworld-tts-2'],
+                options: [
+                    { label: 'Stable', name: 'STABLE' },
+                    { label: 'Balanced', name: 'BALANCED' },
+                    { label: 'Creative', name: 'CREATIVE' }
+                ],
+                default: 'BALANCED'
+            }
+        ]
+    },
     [TextToSpeechType.OPENAI_TTS]: {
         label: 'OpenAI TTS',
         name: TextToSpeechType.OPENAI_TTS,
@@ -122,6 +186,10 @@ const TextToSpeech = ({ dialogProps }) => {
     }
 
     const onSave = async () => {
+        if (selectedProvider === TextToSpeechType.INWORLD_TTS && (!textToSpeech?.inworld?.credentialId || !textToSpeech?.inworld?.voice)) {
+            enqueueSnackbar({ message: 'Choose an Inworld credential and voice first', options: { variant: 'warning' } })
+            return
+        }
         const textToSpeechConfig = setValue(true, selectedProvider, 'status')
         try {
             const saveResp = await chatflowsApi.updateChatflow(dialogProps.chatflow.id, {
@@ -170,6 +238,10 @@ const TextToSpeech = ({ dialogProps }) => {
         }
 
         newVal[providerName][inputParamName] = value
+        if (providerName === TextToSpeechType.INWORLD_TTS && inputParamName === 'model' && value === 'inworld-tts-2-flash') {
+            delete newVal[providerName].instruction
+            delete newVal[providerName].deliveryMode
+        }
         if (inputParamName === 'status' && value === true) {
             // ensure that the others are turned off
             Object.keys(textToSpeechProviders).forEach((key) => {
@@ -184,7 +256,10 @@ const TextToSpeech = ({ dialogProps }) => {
         }
 
         // Reset test audio when voice or credential is changed
-        if ((inputParamName === 'voice' || inputParamName === 'credentialId') && providerName === selectedProvider) {
+        if (
+            ['voice', 'credentialId', 'model', 'instruction', 'deliveryMode', 'speakingRate'].includes(inputParamName) &&
+            providerName === selectedProvider
+        ) {
             resetTestAudio()
         }
 
@@ -239,16 +314,22 @@ const TextToSpeech = ({ dialogProps }) => {
             return
         }
 
+        resetTestAudio()
         setIsGeneratingTest(true)
 
         try {
             const providerConfig = textToSpeech?.[selectedProvider] || {}
             const body = {
                 text: 'Today is a wonderful day to build something with Flowise!',
+                chatId: crypto.randomUUID(),
+                chatMessageId: crypto.randomUUID(),
                 provider: selectedProvider,
                 credentialId: providerConfig.credentialId,
                 voice: providerConfig.voice,
-                model: providerConfig.model
+                model: providerConfig.model,
+                instruction: providerConfig.instruction,
+                deliveryMode: providerConfig.deliveryMode,
+                speakingRate: providerConfig.speakingRate
             }
 
             const response = await fetch('/api/v1/text-to-speech/generate', {
@@ -265,55 +346,16 @@ const TextToSpeech = ({ dialogProps }) => {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
 
-            const audioChunks = []
-            const reader = response.body.getReader()
-            let buffer = ''
+            const combinedBuffer = await readTtsPreviewAudio(response, body.chatMessageId)
+            const audioBlob = new Blob([combinedBuffer], { type: 'audio/mpeg' })
+            const audioUrl = URL.createObjectURL(audioBlob)
 
-            let done = false
-            while (!done) {
-                const result = await reader.read()
-                done = result.done
-                if (done) break
-
-                const chunk = new TextDecoder().decode(result.value, { stream: true })
-                buffer += chunk
-                const lines = buffer.split('\n\n')
-                buffer = lines.pop() || ''
-
-                for (const eventBlock of lines) {
-                    if (eventBlock.trim()) {
-                        const event = parseSSEEvent(eventBlock)
-                        if (event && event.event === 'tts_data' && event.data?.audioChunk) {
-                            const audioBuffer = Uint8Array.from(atob(event.data.audioChunk), (c) => c.charCodeAt(0))
-                            audioChunks.push(audioBuffer)
-                        }
-                    }
-                }
+            // Clean up previous audio
+            if (testAudioSrc) {
+                URL.revokeObjectURL(testAudioSrc)
             }
 
-            if (audioChunks.length > 0) {
-                // Combine all chunks into a single blob
-                const totalLength = audioChunks.reduce((sum, chunk) => sum + chunk.length, 0)
-                const combinedBuffer = new Uint8Array(totalLength)
-                let offset = 0
-
-                for (const chunk of audioChunks) {
-                    combinedBuffer.set(chunk, offset)
-                    offset += chunk.length
-                }
-
-                const audioBlob = new Blob([combinedBuffer], { type: 'audio/mpeg' })
-                const audioUrl = URL.createObjectURL(audioBlob)
-
-                // Clean up previous audio
-                if (testAudioSrc) {
-                    URL.revokeObjectURL(testAudioSrc)
-                }
-
-                setTestAudioSrc(audioUrl)
-            } else {
-                throw new Error('No audio data received')
-            }
+            setTestAudioSrc(audioUrl)
         } catch (error) {
             console.error('Error testing TTS:', error)
             enqueueSnackbar({
@@ -323,28 +365,6 @@ const TextToSpeech = ({ dialogProps }) => {
         } finally {
             setIsGeneratingTest(false)
         }
-    }
-
-    const parseSSEEvent = (eventBlock) => {
-        const lines = eventBlock.trim().split('\n')
-        const event = { event: null, data: null }
-
-        for (const line of lines) {
-            if (line.startsWith('event:')) {
-                event.event = line.substring(6).trim()
-            } else if (line.startsWith('data:')) {
-                const dataStr = line.substring(5).trim()
-                try {
-                    const parsed = JSON.parse(dataStr)
-                    if (parsed.data) {
-                        event.data = parsed.data
-                    }
-                } catch (e) {
-                    console.error('Error parsing SSE data:', e)
-                }
-            }
-        }
-        return event.event ? event : null
     }
 
     // Audio control functions for waveform component
@@ -486,104 +506,108 @@ const TextToSpeech = ({ dialogProps }) => {
                             }
                         />
                     </ListItem>
-                    {textToSpeechProviders[selectedProvider].inputs.map((inputParam) => (
-                        <Box key={`${selectedProvider}-${inputParam.name}`} sx={{ p: 2 }}>
-                            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                <Typography>
-                                    {inputParam.label}
-                                    {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
-                                    {inputParam.description && (
-                                        <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />
-                                    )}
-                                </Typography>
-                            </div>
-                            {inputParam.type === 'credential' && (
-                                <CredentialInputHandler
-                                    key={textToSpeech?.[selectedProvider]?.credentialId}
-                                    data={
-                                        textToSpeech?.[selectedProvider]?.credentialId
-                                            ? { credential: textToSpeech?.[selectedProvider]?.credentialId }
-                                            : {}
-                                    }
-                                    inputParam={inputParam}
-                                    onSelect={(newValue) => {
-                                        setValue(newValue, selectedProvider, 'credentialId')
-                                        // Load voices when credential is updated
-                                        if (newValue && selectedProvider !== 'none') {
-                                            setTimeout(() => loadVoicesForProvider(selectedProvider, newValue), 100)
+                    {textToSpeechProviders[selectedProvider].inputs
+                        .filter(
+                            (inputParam) =>
+                                !inputParam.models ||
+                                inputParam.models.includes(textToSpeech?.[selectedProvider]?.model || 'inworld-tts-2-flash')
+                        )
+                        .map((inputParam) => (
+                            <Box key={`${selectedProvider}-${inputParam.name}`} sx={{ p: 2 }}>
+                                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <Typography>
+                                        {inputParam.label}
+                                        {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
+                                        {inputParam.description && (
+                                            <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />
+                                        )}
+                                    </Typography>
+                                </div>
+                                {inputParam.type === 'credential' && (
+                                    <CredentialInputHandler
+                                        key={textToSpeech?.[selectedProvider]?.credentialId}
+                                        data={
+                                            textToSpeech?.[selectedProvider]?.credentialId
+                                                ? { credential: textToSpeech?.[selectedProvider]?.credentialId }
+                                                : {}
                                         }
-                                    }}
-                                />
-                            )}
-                            {inputParam.type === 'boolean' && (
-                                <SwitchInput
-                                    onChange={(newValue) => setValue(newValue, selectedProvider, inputParam.name)}
-                                    value={
-                                        textToSpeech?.[selectedProvider]
-                                            ? textToSpeech[selectedProvider][inputParam.name]
-                                            : inputParam.default ?? false
-                                    }
-                                />
-                            )}
-                            {(inputParam.type === 'string' || inputParam.type === 'password' || inputParam.type === 'number') && (
-                                <Input
-                                    inputParam={inputParam}
-                                    onChange={(newValue) => setValue(newValue, selectedProvider, inputParam.name)}
-                                    value={
-                                        textToSpeech?.[selectedProvider]
-                                            ? textToSpeech[selectedProvider][inputParam.name]
-                                            : inputParam.default ?? ''
-                                    }
-                                />
-                            )}
-                            {inputParam.type === 'options' && (
-                                <Dropdown
-                                    name={inputParam.name}
-                                    options={inputParam.options}
-                                    onSelect={(newValue) => setValue(newValue, selectedProvider, inputParam.name)}
-                                    value={
-                                        textToSpeech?.[selectedProvider]
-                                            ? textToSpeech[selectedProvider][inputParam.name]
-                                            : inputParam.default ?? 'choose an option'
-                                    }
-                                />
-                            )}
-                            {inputParam.type === 'voice_select' && (
-                                <Autocomplete
-                                    size='small'
-                                    sx={{ mt: 1 }}
-                                    options={voices}
-                                    loading={loadingVoices}
-                                    getOptionLabel={(option) => option.name || ''}
-                                    value={
-                                        voices.find(
-                                            (voice) =>
-                                                voice.id === (textToSpeech?.[selectedProvider]?.[inputParam.name] || inputParam.default)
-                                        ) || null
-                                    }
-                                    onChange={(event, newValue) => {
-                                        setValue(newValue ? newValue.id : '', selectedProvider, inputParam.name)
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            placeholder={loadingVoices ? 'Loading voices...' : 'Choose a voice'}
-                                            InputProps={{
-                                                ...params.InputProps,
-                                                endAdornment: (
-                                                    <>
-                                                        {loadingVoices ? <CircularProgress color='inherit' size={20} /> : null}
-                                                        {params.InputProps.endAdornment}
-                                                    </>
-                                                )
-                                            }}
-                                        />
-                                    )}
-                                    disabled={loadingVoices || !textToSpeech?.[selectedProvider]?.credentialId}
-                                />
-                            )}
-                        </Box>
-                    ))}
+                                        inputParam={inputParam}
+                                        onSelect={(newValue) => {
+                                            setValue(newValue, selectedProvider, 'credentialId')
+                                            // Load voices when credential is updated
+                                            if (newValue && selectedProvider !== 'none') {
+                                                setTimeout(() => loadVoicesForProvider(selectedProvider, newValue), 100)
+                                            }
+                                        }}
+                                    />
+                                )}
+                                {inputParam.type === 'boolean' && (
+                                    <SwitchInput
+                                        onChange={(newValue) => setValue(newValue, selectedProvider, inputParam.name)}
+                                        value={
+                                            textToSpeech?.[selectedProvider]
+                                                ? textToSpeech[selectedProvider][inputParam.name]
+                                                : inputParam.default ?? false
+                                        }
+                                    />
+                                )}
+                                {(inputParam.type === 'string' || inputParam.type === 'password' || inputParam.type === 'number') && (
+                                    <Input
+                                        inputParam={inputParam}
+                                        onChange={(newValue) => setValue(newValue, selectedProvider, inputParam.name)}
+                                        value={
+                                            textToSpeech?.[selectedProvider]
+                                                ? textToSpeech[selectedProvider][inputParam.name]
+                                                : inputParam.default ?? ''
+                                        }
+                                    />
+                                )}
+                                {inputParam.type === 'options' && (
+                                    <Dropdown
+                                        name={inputParam.name}
+                                        options={inputParam.options}
+                                        onSelect={(newValue) => setValue(newValue, selectedProvider, inputParam.name)}
+                                        value={
+                                            textToSpeech?.[selectedProvider]?.[inputParam.name] ?? inputParam.default ?? 'choose an option'
+                                        }
+                                    />
+                                )}
+                                {inputParam.type === 'voice_select' && (
+                                    <Autocomplete
+                                        size='small'
+                                        sx={{ mt: 1 }}
+                                        options={voices}
+                                        loading={loadingVoices}
+                                        getOptionLabel={(option) => option.name || ''}
+                                        value={
+                                            voices.find(
+                                                (voice) =>
+                                                    voice.id === (textToSpeech?.[selectedProvider]?.[inputParam.name] || inputParam.default)
+                                            ) || null
+                                        }
+                                        onChange={(event, newValue) => {
+                                            setValue(newValue ? newValue.id : '', selectedProvider, inputParam.name)
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                placeholder={loadingVoices ? 'Loading voices...' : 'Choose a voice'}
+                                                InputProps={{
+                                                    ...params.InputProps,
+                                                    endAdornment: (
+                                                        <>
+                                                            {loadingVoices ? <CircularProgress color='inherit' size={20} /> : null}
+                                                            {params.InputProps.endAdornment}
+                                                        </>
+                                                    )
+                                                }}
+                                            />
+                                        )}
+                                        disabled={loadingVoices || !textToSpeech?.[selectedProvider]?.credentialId}
+                                    />
+                                )}
+                            </Box>
+                        ))}
 
                     {/* Auto-play Toggle */}
                     <Box sx={{ p: 2 }}>

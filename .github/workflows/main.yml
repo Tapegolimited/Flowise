@@ -42,12 +42,35 @@ jobs:
               with:
                   working-directory: ./
                   runTests: false
+            - name: Start Flowise for Cypress
+              shell: bash
+              run: |
+                  flowise_log="$RUNNER_TEMP/flowise-cypress-server.log"
+                  pnpm --dir packages/server start > "$flowise_log" 2>&1 &
+                  flowise_pid=$!
+                  flowise_deadline=$((SECONDS + 120))
+                  while ((SECONDS < flowise_deadline)); do
+                      if ! kill -0 "$flowise_pid" 2>/dev/null; then
+                          break
+                      fi
+                      if curl --noproxy '*' --fail --silent --max-time 2 http://127.0.0.1:3000 > /dev/null; then
+                          exit 0
+                      fi
+                      sleep 1
+                  done
+                  echo '::error::Flowise did not become ready for Cypress within 120 seconds.'
+                  tail -n 200 "$flowise_log"
+                  exit 1
             - name: Cypress test
               uses: cypress-io/github-action@v7.1.5
               with:
                   install: false
                   working-directory: packages/server
-                  start: pnpm start
-                  wait-on: 'http://localhost:3000'
-                  wait-on-timeout: 120
                   browser: chrome
+            - name: Show Flowise log on failure
+              if: failure()
+              shell: bash
+              run: |
+                  if [[ -f "$RUNNER_TEMP/flowise-cypress-server.log" ]]; then
+                      tail -n 200 "$RUNNER_TEMP/flowise-cypress-server.log"
+                  fi

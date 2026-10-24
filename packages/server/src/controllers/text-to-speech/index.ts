@@ -17,7 +17,10 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
             provider: bodyProvider,
             credentialId: bodyCredentialId,
             voice: bodyVoice,
-            model: bodyModel
+            model: bodyModel,
+            instruction: bodyInstruction,
+            deliveryMode: bodyDeliveryMode,
+            speakingRate: bodySpeakingRate
         } = req.body
 
         if (!text) {
@@ -28,6 +31,7 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
         }
 
         let provider: string, credentialId: string, voice: string, model: string
+        let instruction: string | undefined, deliveryMode: string | undefined, speakingRate: number | string | undefined
 
         if (chatflowId) {
             let workspaceId = req.user?.activeWorkspaceId
@@ -70,12 +74,18 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
             credentialId = providerConfig.credentialId
             voice = providerConfig.voice
             model = providerConfig.model
+            instruction = providerConfig.instruction
+            deliveryMode = providerConfig.deliveryMode
+            speakingRate = providerConfig.speakingRate
         } else {
             // Use TTS config from request body
             provider = bodyProvider
             credentialId = bodyCredentialId
             voice = bodyVoice
             model = bodyModel
+            instruction = bodyInstruction
+            deliveryMode = bodyDeliveryMode
+            speakingRate = bodySpeakingRate
         }
 
         if (!provider) {
@@ -109,13 +119,29 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
             name: provider,
             credentialId: credentialId,
             voice: voice,
-            model: model
+            model: model,
+            instruction,
+            deliveryMode,
+            speakingRate
         }
 
         // Create and store AbortController
         const abortController = new AbortController()
         const ttsAbortId = `tts_${chatId}_${chatMessageId}`
+        appServer.abortControllerPool.get(ttsAbortId)?.abort()
         appServer.abortControllerPool.add(ttsAbortId, abortController)
+        let completed = false
+        const onDisconnect = () => {
+            if (!completed) abortController.abort()
+        }
+        const assertResponseOpen = () => {
+            if (abortController.signal.aborted || res.destroyed || res.writableEnded) {
+                abortController.abort()
+                throw new Error('TTS generation aborted')
+            }
+        }
+        // Manual speech has no durable prediction to drain after the browser leaves.
+        res.once('close', onDisconnect)
 
         try {
             await convertTextToSpeechStream(
@@ -124,6 +150,7 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
                 options,
                 abortController,
                 (format: string) => {
+                    assertResponseOpen()
                     const startResponse = {
                         event: 'tts_start',
                         data: { chatMessageId, format }
@@ -132,6 +159,7 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
                     res.write(`data: ${JSON.stringify(startResponse)}\n\n`)
                 },
                 (chunk: Buffer) => {
+                    assertResponseOpen()
                     const audioBase64 = chunk.toString('base64')
                     const clientResponse = {
                         event: 'tts_data',
@@ -140,7 +168,9 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
                     res.write('event: tts_data\n')
                     res.write(`data: ${JSON.stringify(clientResponse)}\n\n`)
                 },
-                async () => {
+                () => {
+                    assertResponseOpen()
+                    completed = true
                     const endResponse = {
                         event: 'tts_end',
                         data: { chatMessageId }
@@ -148,16 +178,26 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
                     res.write('event: tts_end\n')
                     res.write(`data: ${JSON.stringify(endResponse)}\n\n`)
                     res.end()
-                    // Clean up from pool on successful completion
-                    appServer.abortControllerPool.remove(ttsAbortId)
                 }
             )
         } catch (error) {
-            // Clean up from pool on error
-            appServer.abortControllerPool.remove(ttsAbortId)
+            if (abortController.signal.aborted) {
+                if (!res.destroyed && !res.writableEnded) {
+                    res.write('event: tts_abort\n')
+                    res.write(`data: ${JSON.stringify({ event: 'tts_abort', data: { chatMessageId } })}\n\n`)
+                    res.end()
+                }
+                return
+            }
             throw error
+        } finally {
+            res.removeListener('close', onDisconnect)
+            if (appServer.abortControllerPool.get(ttsAbortId) === abortController) {
+                appServer.abortControllerPool.remove(ttsAbortId)
+            }
         }
-    } catch (error) {
+    } catch {
+        if (res.destroyed || res.writableEnded) return
         if (!res.headersSent) {
             res.setHeader('Content-Type', 'text/event-stream')
             res.setHeader('Cache-Control', 'no-cache')
@@ -166,7 +206,10 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
 
         const errorResponse = {
             event: 'tts_error',
-            data: { error: error instanceof Error ? error.message : 'TTS generation failed' }
+            data: {
+                chatMessageId: typeof req.body?.chatMessageId === 'string' ? req.body.chatMessageId : undefined,
+                error: 'Speech is unavailable right now.'
+            }
         }
         res.write('event: tts_error\n')
         res.write(`data: ${JSON.stringify(errorResponse)}\n\n`)

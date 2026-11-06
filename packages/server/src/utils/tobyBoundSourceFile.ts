@@ -3,7 +3,8 @@ import { IFileUpload, addArrayFilesToStorage, validateMimeTypeAndExtensionMatch 
 import { InternalFlowiseError } from '../errors/internalFlowiseError'
 import { StatusCodes } from 'http-status-codes'
 
-const sourceNames = ['marked-test-result.txt', 'learning-material-and-mcq.txt']
+const readingSourceName = 'reading-material-context.md'
+const sourceNames = ['marked-test-result.txt', 'learning-material-and-mcq.txt', readingSourceName]
 
 /** Server opt-in only. Native/browser full-file uploads keep their existing protocol. */
 export const getTobyBoundSourceUpload = (input: {
@@ -17,6 +18,23 @@ export const getTobyBoundSourceUpload = (input: {
 }
 
 export const decodeTobyBoundSourceUpload = (upload: IFileUpload): Buffer => {
+    // The protected reader sends extracted Markdown, matching native file:full.
+    // Its exact name is a protocol identifier; native text storage uses .txt.
+    if (upload.name === readingSourceName) {
+        if (upload.type !== 'file:full' || upload.mime !== 'text/plain' || typeof upload.data !== 'string') {
+            throw new InternalFlowiseError(StatusCodes.BAD_REQUEST, 'Invalid bound source upload')
+        }
+        if (Buffer.byteLength(upload.data, 'utf8') > 196608) {
+            throw new InternalFlowiseError(StatusCodes.REQUEST_TOO_LONG, 'Bound source upload exceeds budget')
+        }
+        const bytes = Buffer.from(upload.data, 'utf8')
+        const header = /^# ([^\r\n]+)\n\n## Source and trust\n/.exec(upload.data)
+        if (bytes.toString('utf8') !== upload.data || bytes.includes(0) || !header || Buffer.byteLength(header[1], 'utf8') > 400) {
+            throw new InternalFlowiseError(StatusCodes.BAD_REQUEST, 'Invalid bound source upload')
+        }
+        validateMimeTypeAndExtensionMatch('reading-material-context.txt', upload.mime)
+        return bytes
+    }
     const prefix = 'data:text/plain;base64,'
     if (
         !sourceNames.includes(upload.name) ||
@@ -59,7 +77,8 @@ export const prepareTobyBoundSourceUpload = async (
 ): Promise<{ upload: IFileUpload; content: string }> => {
     const bytes = decodeTobyBoundSourceUpload(upload)
     // Versioned names cannot overwrite an earlier attachment in the same session.
-    const name = `${upload.name.slice(0, -4)}-${createHash('sha256').update(bytes).digest('hex')}.txt`
+    const stem = upload.name === readingSourceName ? 'reading-material-context' : upload.name.slice(0, -4)
+    const name = `${stem}-${createHash('sha256').update(bytes).digest('hex')}.txt`
     const names: string[] = []
     const stored = await addArrayFilesToStorage('text/plain', bytes, name, names, runtime.orgId, runtime.chatflowid, runtime.chatId)
     await runtime.updateUsage(stored.totalSize)

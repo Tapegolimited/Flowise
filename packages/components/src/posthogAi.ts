@@ -249,3 +249,59 @@ export async function observeAiHttp<T extends { data?: unknown }>(
     }
     return result
 }
+
+// The private Jev graph consumes the existing response through text() in the VM.
+// Record usage when that read completes, preserving the original stream and limits.
+export async function observeJevFetch<T extends { status: number; text: () => Promise<string> }>(
+    url: string,
+    options: { method?: string; body?: unknown },
+    send: () => Promise<T>
+): Promise<T> {
+    const state = context.getStore()
+    if (!state || url !== 'https://openrouter.ai/api/alpha/decisions' || options.method?.toUpperCase() !== 'POST') return send()
+
+    const started = performance.now()
+    const properties: Properties = {
+        $ai_parent_id: state.spanId,
+        $ai_span_name: 'provider_request',
+        $ai_provider: 'openrouter'
+    }
+    try {
+        const model = objectValue(options.body)?.model
+        if (typeof model === 'string' && modelName.test(model)) properties.$ai_model = model
+    } catch {
+        // A body field can be unavailable across the VM boundary.
+    }
+    let response: T
+    try {
+        response = await send()
+    } catch (error) {
+        capture(state, '$ai_generation', started, outcomeFor(error), properties)
+        throw error
+    }
+    properties.$ai_http_status = response.status
+    if (response.status < 200 || response.status >= 300) {
+        capture(state, '$ai_generation', started, outcomeFor({ status: response.status }), properties)
+        return response
+    }
+    const read = response.text.bind(response)
+    let captured = false
+    response.text = async () => {
+        try {
+            const text = await read()
+            if (!captured) {
+                captured = true
+                addAiUsage(properties, objectValue(objectValue(text)?.usage))
+                capture(state, '$ai_generation', started, 'success', properties)
+            }
+            return text
+        } catch (error) {
+            if (!captured) {
+                captured = true
+                capture(state, '$ai_generation', started, outcomeFor(error), properties)
+            }
+            throw error
+        }
+    }
+    return response
+}

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { BaseCallbackHandler } from '@langchain/core/callbacks/base'
 import { AIMessage } from '@langchain/core/messages'
 import type { ChatGeneration } from '@langchain/core/outputs'
-import { observeAiHttp, observeChatModel, readAiParent, runWithAiTrace, signAiParent, type AiEvent } from './posthogAi'
+import { observeAiHttp, observeChatModel, observeJevFetch, readAiParent, runWithAiTrace, signAiParent, type AiEvent } from './posthogAi'
 
 const workflow = randomUUID()
 
@@ -95,4 +95,29 @@ describe('metadata-only AI Observability', () => {
             )
         ).resolves.toBe(7)
     })
+})
+
+test('captures the Jev node-fetch stream exactly once, after its normal read', async () => {
+    const events: AiEvent[] = []
+    const wire = JSON.stringify({ usage: { input_tokens: 18, output_tokens: 1 }, scores: ['private learner search'] })
+    const original = { status: 200, text: jest.fn().mockResolvedValue(wire) }
+    const reader = original.text
+    await runWithAiTrace(
+        (event) => events.push(event),
+        workflow,
+        1,
+        'prediction',
+        undefined,
+        undefined,
+        async () => {
+            const observed = await observeJevFetch('https://openrouter.ai/api/alpha/decisions', { method: 'POST' }, async () => original)
+            expect(observed).toBe(original)
+            expect(reader).not.toHaveBeenCalled()
+            expect(await observed.text()).toBe(wire)
+            expect(await observed.text()).toBe(wire)
+        }
+    )
+    expect(events.map(({ event }) => event)).toEqual(['$ai_generation', '$ai_trace'])
+    expect(events[0].properties.$ai_input_tokens).toBe(18)
+    expect(JSON.stringify(events)).not.toContain('private learner search')
 })

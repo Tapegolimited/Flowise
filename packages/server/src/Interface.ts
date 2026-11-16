@@ -458,6 +458,7 @@ export interface IPredictionQueueAppServer {
 }
 
 export interface IExecuteFlowParams extends IPredictionQueueAppServer {
+    aiParent?: import('flowise-components').AiParent
     incomingInput: IncomingInput
     chatflow: IChatFlow
     chatId: string

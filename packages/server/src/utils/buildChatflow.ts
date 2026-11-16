@@ -1,4 +1,5 @@
 import { Request } from 'express'
+import { observeFlow } from './posthogAi'
 import * as path from 'path'
 import { DataSource } from 'typeorm'
 import { v4 as uuidv4 } from 'uuid'
@@ -16,7 +17,9 @@ import {
     getFileFromUpload,
     removeSpecificFileFromUpload,
     EvaluationRunner,
-    handleEscapeCharacters
+    handleEscapeCharacters,
+    aiTraceHeader,
+    readAiParent
 } from 'flowise-components'
 import { StatusCodes } from 'http-status-codes'
 import {
@@ -248,7 +251,10 @@ const getSetVariableNodesOutput = (reactFlowNodes: IReactFlowNode[]) => {
 /*
  * Function to traverse the flow graph and execute the nodes
  */
-export const executeFlow = async ({
+export const executeFlow = (params: IExecuteFlowParams) =>
+    observeFlow(params.chatflow, 'prediction', () => executePrediction(params), params.signal?.signal, params.aiParent)
+
+const executePrediction = async ({
     componentNodes,
     incomingInput,
     chatflow,
@@ -1024,6 +1030,7 @@ export const utilBuildChatflow = async (req: Request, isInternal: boolean = fals
 
         const executeData: IExecuteFlowParams = {
             incomingInput, // Use the defensively created incomingInput variable
+            aiParent: readAiParent(req.get(aiTraceHeader), process.env.TT_POSTHOG_AI_TRACE_SECRET ?? '', chatflowid),
             chatflow,
             chatId,
             baseURL,

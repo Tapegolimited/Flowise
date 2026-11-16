@@ -2,6 +2,7 @@ import { Command, Flags } from '@oclif/core'
 import dotenv from 'dotenv'
 import path from 'path'
 import logger from '../utils/logger'
+import { flushPostHogAi } from '../utils/posthogAi'
 
 dotenv.config({ path: path.join(__dirname, '..', '..', '.env'), override: true })
 
@@ -192,6 +193,17 @@ export abstract class BaseCommand extends Command {
     }
 
     protected async gracefullyExit() {
+        let timeout: ReturnType<typeof setTimeout> | undefined
+        try {
+            await Promise.race([
+                flushPostHogAi(),
+                new Promise<void>((resolve) => {
+                    timeout = setTimeout(resolve, 1600)
+                })
+            ])
+        } finally {
+            if (timeout) clearTimeout(timeout)
+        }
         process.exit(EXIT_CODE.SUCCESS)
     }
 

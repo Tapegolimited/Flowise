@@ -3,7 +3,8 @@ import dns from 'dns/promises'
 import http from 'http'
 import https from 'https'
 import * as ipaddr from 'ipaddr.js'
-import fetch, { RequestInit, Response } from 'node-fetch'
+import fetch, { Headers, RequestInit, Response } from 'node-fetch'
+import { aiChildHeaders, aiTraceHeader } from './posthogAi'
 
 const DEFAULT_DENY_LIST = [
     '0.0.0.0',
@@ -186,7 +187,11 @@ export async function secureAxiosRequest(
             }
         }
 
+        const aiHeaders: Record<string, string> | undefined = redirects === 0 ? aiChildHeaders(currentUrl, currentConfig.method) : undefined
+        if (aiHeaders) currentConfig.headers = { ...currentConfig.headers, ...aiHeaders }
         const response = await axios(currentConfig)
+        // The signed trace context is scoped to the first validated prediction request.
+        if (aiHeaders) delete currentConfig.headers?.[aiTraceHeader]
 
         // If it's a successful response (not a redirect), return it
         if (response.status < 300 || response.status >= 400) {
@@ -246,7 +251,15 @@ export async function secureFetch(
         const resolved = await resolveAndValidate(currentUrl)
         const agent = createPinnedAgent(resolved, agentOptions)
 
+        const aiHeaders = redirectCount === 0 ? aiChildHeaders(currentUrl, currentInit.method) : undefined
+        const originalHeaders = currentInit.headers
+        if (aiHeaders) {
+            const headers = new Headers(originalHeaders)
+            for (const [name, value] of Object.entries(aiHeaders)) headers.set(name, value)
+            currentInit.headers = headers
+        }
         const response = await fetch(currentUrl, { ...currentInit, agent: () => agent })
+        currentInit.headers = originalHeaders
 
         // If it's a successful response (not a redirect), return it
         if (response.status < 300 || response.status >= 400) {

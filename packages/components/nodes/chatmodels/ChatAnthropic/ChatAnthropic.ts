@@ -1,3 +1,4 @@
+import { observeChatModel } from '../../../src/posthogAi'
 import { AnthropicInput, ChatAnthropic as LangchainChatAnthropic } from '@langchain/anthropic'
 import { BaseCache } from '@langchain/core/caches'
 import { BaseLLMParams } from '@langchain/core/language_models/llms'
@@ -240,6 +241,7 @@ class ChatAnthropic_ChatModels implements INode {
         }
 
         const model = new ChatAnthropic(nodeData.id, obj)
+        observeChatModel(model, 'anthropic', modelName)
         model.setMultiModalOption(multiModalOption)
         return model
     }

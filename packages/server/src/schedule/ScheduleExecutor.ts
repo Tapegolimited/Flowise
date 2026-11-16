@@ -15,6 +15,7 @@ import { ChatFlow } from '../database/entities/ChatFlow'
 import { Workspace } from '../enterprise/database/entities/workspace.entity'
 import { Organization } from '../enterprise/database/entities/organization.entity'
 import { executeAgentFlow } from '../utils/buildAgentflow'
+import { observeFlow } from '../utils/posthogAi'
 import { checkPredictions, updatePredictionsUsage } from '../utils/quotaUsage'
 import scheduleService from '../services/schedule'
 import { Telemetry } from '../utils/telemetry'
@@ -193,24 +194,26 @@ async function _executeAgentflow(ctx: ScheduleExecutionContext, record: Schedule
             incomingInput.question = record.defaultInput
         }
 
-        const result = await executeAgentFlow({
-            componentNodes,
-            incomingInput,
-            chatflow,
-            chatId,
-            appDataSource,
-            telemetry,
-            cachePool,
-            usageCacheManager,
-            sseStreamer,
-            baseURL: process.env.APP_URL ?? '',
-            isInternal: true,
-            chatType: ChatType.SCHEDULED,
-            orgId,
-            workspaceId,
-            subscriptionId,
-            productId
-        })
+        const result = await observeFlow(chatflow, 'schedule', () =>
+            executeAgentFlow({
+                componentNodes,
+                incomingInput,
+                chatflow,
+                chatId,
+                appDataSource,
+                telemetry,
+                cachePool,
+                usageCacheManager,
+                sseStreamer,
+                baseURL: process.env.APP_URL ?? '',
+                isInternal: true,
+                chatType: ChatType.SCHEDULED,
+                orgId,
+                workspaceId,
+                subscriptionId,
+                productId
+            })
+        )
 
         const elapsedTimeMs = Date.now() - startTime
         const executionId: string | undefined =

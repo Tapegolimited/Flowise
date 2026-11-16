@@ -21,6 +21,7 @@ import zodToJsonSchema, { type JsonSchema7Type } from 'zod-to-json-schema'
 import { z } from 'zod/v3'
 import { customGet } from '../nodes/sequentialagents/commonUtils'
 import { checkDenyList, secureAxiosRequest, secureFetch } from './httpSecurity'
+import { observeAiHttp, observeJevFetch } from './posthogAi'
 import { ICommonObject, IDatabaseEntity, IFileUpload, IMessage, INodeData, IVariable, MessageContentImageUrl } from './Interface'
 import { getFileFromStorage } from './storageUtils'
 
@@ -1742,7 +1743,7 @@ export const executeJavaScriptCode = async (
 
         // Axios
         const secureAxiosWrapper = async (config: any) => {
-            return await secureAxiosRequest(config)
+            return observeAiHttp(config?.url, config?.method, config?.data, () => secureAxiosRequest(config))
         }
         secureAxiosWrapper.get = async (url: string, config: any = {}) => secureAxiosWrapper({ ...config, method: 'GET', url })
         secureAxiosWrapper.post = async (url: string, data: any, config: any = {}) =>
@@ -1757,7 +1758,7 @@ export const executeJavaScriptCode = async (
 
         // Node Fetch
         const secureNodeFetch = async (url: string, options: any = {}) => {
-            return await secureFetch(url, options)
+            return observeJevFetch(url, options, () => secureFetch(url, options))
         }
         secureWrappers['node-fetch'] = secureNodeFetch
 

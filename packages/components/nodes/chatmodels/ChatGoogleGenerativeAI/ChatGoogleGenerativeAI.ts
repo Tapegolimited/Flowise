@@ -1,3 +1,4 @@
+import { observeChatModel } from '../../../src/posthogAi'
 import { HarmBlockThreshold, HarmCategory } from '@google/generative-ai'
 import type { SafetySetting } from '@google/generative-ai'
 import { BaseCache } from '@langchain/core/caches'
@@ -366,6 +367,7 @@ class GoogleGenerativeAI_ChatModels implements INode {
         }
 
         const model = new ChatGoogleGenerativeAI(nodeData.id, obj, tobyContextBudget)
+        observeChatModel(model, 'google', modelName)
         model.setMultiModalOption(multiModalOption)
 
         return model

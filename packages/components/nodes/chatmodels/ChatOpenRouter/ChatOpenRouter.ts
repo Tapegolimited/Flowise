@@ -1,3 +1,4 @@
+import { observeChatModel } from '../../../src/posthogAi'
 import { ChatOpenAI as LangchainChatOpenAI, ChatOpenAIFields } from '@langchain/openai'
 import { BaseCache } from '@langchain/core/caches'
 import { ICommonObject, IMultiModalOption, INode, INodeData, INodeParams } from '../../../src/Interface'
@@ -186,6 +187,7 @@ class ChatOpenRouter_ChatModels implements INode {
         }
 
         const model = new ChatOpenRouter(nodeData.id, obj)
+        observeChatModel(model, 'openrouter', modelName)
         model.setMultiModalOption(multiModalOption)
         return model
     }

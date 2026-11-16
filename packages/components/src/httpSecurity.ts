@@ -3,7 +3,8 @@ import dns from 'dns/promises'
 import http from 'http'
 import https from 'https'
 import * as ipaddr from 'ipaddr.js'
-import fetch, { RequestInit, Response } from 'node-fetch'
+import fetch, { Headers, RequestInit, Response } from 'node-fetch'
+import { aiChildHeaders } from './posthogAi'
 
 const DEFAULT_DENY_LIST = [
     '0.0.0.0',
@@ -186,7 +187,10 @@ export async function secureAxiosRequest(
             }
         }
 
-        const response = await axios(currentConfig)
+        const aiHeaders: Record<string, string> | undefined = redirects === 0 ? aiChildHeaders(currentUrl, currentConfig.method) : undefined
+        const response: AxiosResponse = await axios(
+            aiHeaders ? { ...currentConfig, headers: { ...currentConfig.headers, ...aiHeaders } } : currentConfig
+        )
 
         // If it's a successful response (not a redirect), return it
         if (response.status < 300 || response.status >= 400) {
@@ -194,7 +198,7 @@ export async function secureAxiosRequest(
         }
 
         // Handle redirect
-        const location = response.headers.location
+        const location: string | undefined = response.headers.location
         if (!location) {
             // No location header, but it's a redirect status - return the response
             return response
@@ -246,7 +250,14 @@ export async function secureFetch(
         const resolved = await resolveAndValidate(currentUrl)
         const agent = createPinnedAgent(resolved, agentOptions)
 
-        const response = await fetch(currentUrl, { ...currentInit, agent: () => agent })
+        const aiHeaders = redirectCount === 0 ? aiChildHeaders(currentUrl, currentInit.method) : undefined
+        const attempt = { ...currentInit, agent: () => agent }
+        if (aiHeaders) {
+            const headers = new Headers(currentInit.headers)
+            for (const [name, value] of Object.entries(aiHeaders)) headers.set(name, value)
+            attempt.headers = headers
+        }
+        const response = await fetch(currentUrl, attempt)
 
         // If it's a successful response (not a redirect), return it
         if (response.status < 300 || response.status >= 400) {

@@ -1,3 +1,4 @@
+import { observeChatModel } from '../../../src/posthogAi'
 import { BaseCache } from '@langchain/core/caches'
 import { ChatGroq, ChatGroqInput } from '@langchain/groq'
 import { ICommonObject, INode, INodeData, INodeOptionsValue, INodeParams } from '../../../src/Interface'
@@ -99,6 +100,7 @@ class Groq_ChatModels implements INode {
         if (cache) obj.cache = cache
 
         const model = new ChatGroq(obj)
+        observeChatModel(model, 'groq', modelName)
         return model
     }
 }

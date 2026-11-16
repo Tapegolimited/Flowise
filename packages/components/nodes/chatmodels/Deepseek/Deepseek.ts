@@ -1,3 +1,4 @@
+import { observeChatModel } from '../../../src/posthogAi'
 import { BaseCache } from '@langchain/core/caches'
 import { ChatDeepSeek, ChatDeepSeekInput } from '@langchain/deepseek'
 import { ICommonObject, INode, INodeData, INodeOptionsValue, INodeParams } from '../../../src/Interface'
@@ -196,6 +197,7 @@ class Deepseek_ChatModels implements INode {
         }
 
         const model = new ChatDeepSeek(obj)
+        observeChatModel(model, 'deepseek', modelName)
         return model
     }
 }

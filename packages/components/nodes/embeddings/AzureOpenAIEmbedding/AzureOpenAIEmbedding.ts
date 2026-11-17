@@ -1,4 +1,5 @@
 import { AzureOpenAIInput, ClientOptions, AzureOpenAIEmbeddings, OpenAIEmbeddingsParams } from '@langchain/openai'
+import { ObservedAzureOpenAIEmbeddings } from '../../../src/openAiEmbeddingObservability'
 import { ICommonObject, INode, INodeData, INodeParams } from '../../../src/Interface'
 import { getBaseClasses, getCredentialData, getCredentialParam } from '../../../src/utils'
 
@@ -104,7 +105,7 @@ class AzureOpenAIEmbedding_Embeddings implements INode {
             }
         }
 
-        const model = new AzureOpenAIEmbeddings(obj)
+        const model = new ObservedAzureOpenAIEmbeddings(obj)
         return model
     }
 }

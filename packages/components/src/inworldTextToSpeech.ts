@@ -1,3 +1,5 @@
+import { observeAiOperation } from './posthogAi'
+
 /** Inworld is deliberately scoped to speech; it must never redirect other OpenAI clients. */
 const INWORLD_API_ORIGIN = 'https://api.inworld.ai'
 export const INWORLD_DEFAULT_MODEL = 'inworld-tts-2-flash'
@@ -54,7 +56,7 @@ export const splitInworldSpeechText = (text: string, maxUnits = MAX_TEXT_UNITS):
 export const projectInworldSpeechText = (text: string) =>
     text.replace(/\[|\]/g, (bracket) => (bracket === '[' ? ' open square bracket ' : ' close square bracket '))
 
-const requestError = (status: number) => new Error(`Inworld speech request failed (HTTP ${status}).`)
+const requestError = (status: number) => Object.assign(new Error(`Inworld speech request failed (HTTP ${status}).`), { status })
 
 /** Native HTTP streaming is NDJSON, with independently Base64-encoded audio in result.audioContent. */
 export const streamInworldSpeech = async (
@@ -98,104 +100,119 @@ export const streamInworldSpeech = async (
         const upstreamSignal = AbortSignal.any([signal, timeout])
         const assertUpstreamActive = () => {
             assertActive(signal)
-            if (timeout.aborted) throw new Error('Inworld speech request timed out.')
+            if (timeout.aborted) throw Object.assign(new Error('Inworld speech request timed out.'), { name: 'TimeoutError' })
         }
-        const response = await fetch(`${INWORLD_API_ORIGIN}/tts/v1/voice:stream`, {
-            method: 'POST',
-            redirect: 'error',
-            headers: { Authorization: auth, 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({
-                text: prefix + segment,
-                voiceId: config.voice,
-                modelId: model,
-                language: 'en-GB',
-                audioConfig: { audioEncoding: 'MP3', speakingRate },
-                ...(model === 'inworld-tts-2' ? { deliveryMode } : {})
-            }),
-            signal: upstreamSignal
-        }).catch(() => {
-            assertUpstreamActive()
-            throw new Error('Inworld speech request could not be completed.')
-        })
-        assertUpstreamActive()
-        if (!response.ok) {
-            await response.body?.cancel().catch(() => undefined)
-            throw requestError(response.status)
-        }
-        if (!response.body) throw new Error('Inworld returned no audio stream.')
-
-        const reader = response.body.getReader()
-        const decoder = new TextDecoder()
-        let pending = ''
-        let audioReceived = false
-        let finished = false
-        const cancel = () => {
-            void reader.cancel().catch(() => undefined)
-        }
-        upstreamSignal.addEventListener('abort', cancel, { once: true })
-        const consume = (line: string) => {
-            if (!line.trim()) return
-            let message: any
-            try {
-                message = JSON.parse(line)
-            } catch {
-                throw new Error('Inworld returned an invalid audio stream.')
-            }
-            if (!message || typeof message !== 'object' || Array.isArray(message)) {
-                throw new Error('Inworld returned an invalid audio stream.')
-            }
-            if (message.error) {
-                const code = Number.isInteger(message.error.code) ? ` (code ${message.error.code})` : ''
-                // Never forward arbitrary upstream errors, which may echo private input or credentials.
-                throw new Error(`Inworld speech generation failed${code}.`)
-            }
-            const encoded = message.result?.audioContent
-            if (encoded === undefined || encoded === '') return // Usage/timestamp-only frames are valid.
-            if (typeof encoded !== 'string' || encoded.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
-                throw new Error('Inworld returned invalid audio data.')
-            }
-            const audio = Buffer.from(encoded, 'base64')
-            if (!audio.length) throw new Error('Inworld returned invalid audio data.')
-            assertUpstreamActive()
-            if (!started) {
-                onStart('mp3')
-                started = true
-            }
-            // Provider NDJSON frames can be larger than the WordPress SSE boundary.
-            for (let offset = 0; offset < audio.length; offset += 32 * 1024) {
-                assertUpstreamActive()
-                onChunk(audio.subarray(offset, offset + 32 * 1024))
-            }
-            audioReceived = true
-        }
-
-        try {
-            for (;;) {
-                assertUpstreamActive()
-                const { done, value } = await reader.read().catch(() => {
+        await observeAiOperation(
+            '$ai_generation',
+            'text_to_speech',
+            'inworld',
+            model,
+            async () => {
+                const response = await fetch(`${INWORLD_API_ORIGIN}/tts/v1/voice:stream`, {
+                    method: 'POST',
+                    redirect: 'error',
+                    headers: { Authorization: auth, 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({
+                        text: prefix + segment,
+                        voiceId: config.voice,
+                        modelId: model,
+                        language: 'en-GB',
+                        audioConfig: { audioEncoding: 'MP3', speakingRate },
+                        ...(model === 'inworld-tts-2' ? { deliveryMode } : {})
+                    }),
+                    signal: upstreamSignal
+                }).catch(() => {
                     assertUpstreamActive()
-                    throw new Error('Inworld audio stream was interrupted.')
+                    throw new Error('Inworld speech request could not be completed.')
                 })
                 assertUpstreamActive()
-                if (done) break
-                pending += decoder.decode(value, { stream: true })
-                let newline: number
-                while ((newline = pending.indexOf('\n')) !== -1) {
-                    if (newline > MAX_JSON_LINE_UNITS) throw new Error('Inworld audio frame exceeded the supported size.')
-                    consume(pending.slice(0, newline))
-                    pending = pending.slice(newline + 1)
+                if (!response.ok) {
+                    await response.body?.cancel().catch(() => undefined)
+                    throw requestError(response.status)
                 }
-                if (pending.length > MAX_JSON_LINE_UNITS) throw new Error('Inworld audio frame exceeded the supported size.')
-            }
-            pending += decoder.decode()
-            consume(pending) // A valid final NDJSON object need not end with a newline.
-            if (!audioReceived) throw new Error('Inworld returned no audio data.')
-            finished = true
-        } finally {
-            upstreamSignal.removeEventListener('abort', cancel)
-            if (!finished) await reader.cancel().catch(() => undefined)
-            reader.releaseLock()
-        }
+                if (!response.body) throw new Error('Inworld returned no audio stream.')
+
+                const reader = response.body.getReader()
+                const decoder = new TextDecoder()
+                let pending = ''
+                let characters: number | undefined
+                let audioReceived = false
+                let finished = false
+                const cancel = () => {
+                    void reader.cancel().catch(() => undefined)
+                }
+                upstreamSignal.addEventListener('abort', cancel, { once: true })
+                const consume = (line: string) => {
+                    if (!line.trim()) return
+                    let message: any
+                    try {
+                        message = JSON.parse(line)
+                    } catch {
+                        throw new Error('Inworld returned an invalid audio stream.')
+                    }
+                    if (!message || typeof message !== 'object' || Array.isArray(message)) {
+                        throw new Error('Inworld returned an invalid audio stream.')
+                    }
+                    if (message.error) {
+                        const code = Number.isInteger(message.error.code) ? ` (code ${message.error.code})` : ''
+                        // Never forward arbitrary upstream errors, which may echo private input or credentials.
+                        throw new Error(`Inworld speech generation failed${code}.`)
+                    }
+                    const count = message.result?.usage?.processedCharactersCount
+                    if (typeof count === 'number' && Number.isSafeInteger(count) && count >= 0 && count <= MAX_TEXT_UNITS) {
+                        characters = Math.max(characters ?? 0, count)
+                    }
+                    const encoded = message.result?.audioContent
+                    if (encoded === undefined || encoded === '') return // Usage/timestamp-only frames are valid.
+                    if (typeof encoded !== 'string' || encoded.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
+                        throw new Error('Inworld returned invalid audio data.')
+                    }
+                    const audio = Buffer.from(encoded, 'base64')
+                    if (!audio.length) throw new Error('Inworld returned invalid audio data.')
+                    assertUpstreamActive()
+                    if (!started) {
+                        onStart('mp3')
+                        started = true
+                    }
+                    // Provider NDJSON frames can be larger than the WordPress SSE boundary.
+                    for (let offset = 0; offset < audio.length; offset += 32 * 1024) {
+                        assertUpstreamActive()
+                        onChunk(audio.subarray(offset, offset + 32 * 1024))
+                    }
+                    audioReceived = true
+                }
+
+                try {
+                    for (;;) {
+                        assertUpstreamActive()
+                        const { done, value } = await reader.read().catch(() => {
+                            assertUpstreamActive()
+                            throw new Error('Inworld audio stream was interrupted.')
+                        })
+                        assertUpstreamActive()
+                        if (done) break
+                        pending += decoder.decode(value, { stream: true })
+                        let newline: number
+                        while ((newline = pending.indexOf('\n')) !== -1) {
+                            if (newline > MAX_JSON_LINE_UNITS) throw new Error('Inworld audio frame exceeded the supported size.')
+                            consume(pending.slice(0, newline))
+                            pending = pending.slice(newline + 1)
+                        }
+                        if (pending.length > MAX_JSON_LINE_UNITS) throw new Error('Inworld audio frame exceeded the supported size.')
+                    }
+                    pending += decoder.decode()
+                    consume(pending) // A valid final NDJSON object need not end with a newline.
+                    if (!audioReceived) throw new Error('Inworld returned no audio data.')
+                    finished = true
+                    return characters
+                } finally {
+                    upstreamSignal.removeEventListener('abort', cancel)
+                    if (!finished) await reader.cancel().catch(() => undefined)
+                    reader.releaseLock()
+                }
+            },
+            { signal, usage: (characters) => ({ characters }) }
+        )
     }
     assertActive(signal)
     onEnd()

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events'
 import textToSpeech from './index'
 import { convertTextToSpeechStream } from 'flowise-components'
+import { observeFlow } from '../../utils/posthogAi'
 
 const mockControllers = new Map<string, AbortController>()
 const mockPool = {
@@ -13,6 +14,7 @@ jest.mock('flowise-components', () => ({ convertTextToSpeechStream: jest.fn() })
 jest.mock('../../services/chatflows', () => ({ __esModule: true, default: { getChatflowById: jest.fn() } }))
 jest.mock('../../services/text-to-speech', () => ({ __esModule: true, default: { getVoices: jest.fn() } }))
 jest.mock('../../utils', () => ({ databaseEntities: {} }))
+jest.mock('../../utils/posthogAi', () => ({ observeFlow: jest.fn((_flow, _entry, execute) => execute()) }))
 jest.mock('../../utils/getRunningExpressApp', () => ({ getRunningExpressApp: () => ({ abortControllerPool: mockPool }) }))
 
 const converter = convertTextToSpeechStream as jest.Mock
@@ -58,6 +60,12 @@ it('preserves the native MP3 start/data/end contract and cleans the controller w
     await textToSpeech.generateTextToSpeech(request() as any, res)
     const signal = converter.mock.calls[0][3].signal
     expect(signal.aborted).toBe(false)
+    expect(observeFlow).toHaveBeenCalledWith(
+        { id: 'standalone-text-to-speech', updatedDate: new Date(0) },
+        'text_to_speech',
+        expect.any(Function),
+        signal
+    )
     expect(res.write.mock.calls.map((call: any[]) => call[0]).join('')).toContain('"audioChunk":"YXVkaW8="')
     expect(res.write.mock.calls.map((call: any[]) => call[0]).join('')).toContain('"event":"tts_end"')
     expect(mockPool.remove).toHaveBeenCalledTimes(1)

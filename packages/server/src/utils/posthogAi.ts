@@ -64,7 +64,7 @@ function enqueue(event: AiEvent) {
 
 export function observeFlow<T>(
     flow: Pick<IChatFlow, 'id' | 'updatedDate'>,
-    entry: 'prediction' | 'schedule',
+    entry: 'prediction' | 'schedule' | 'text_to_speech',
     execute: () => Promise<T>,
     signal?: AbortSignal,
     parent?: AiParent

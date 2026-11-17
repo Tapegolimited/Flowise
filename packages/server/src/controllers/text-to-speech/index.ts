@@ -6,6 +6,7 @@ import chatflowsService from '../../services/chatflows'
 import textToSpeechService from '../../services/text-to-speech'
 import { databaseEntities } from '../../utils'
 import { getRunningExpressApp } from '../../utils/getRunningExpressApp'
+import { observeFlow } from '../../utils/posthogAi'
 
 const generateTextToSpeech = async (req: Request, res: Response) => {
     try {
@@ -30,6 +31,7 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
             )
         }
 
+        let telemetryFlow = { id: 'standalone-text-to-speech', updatedDate: new Date(0) }
         let provider: string, credentialId: string, voice: string, model: string
         let instruction: string | undefined, deliveryMode: string | undefined, speakingRate: number | string | undefined
 
@@ -57,6 +59,7 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
                     `Error: textToSpeechController.generateTextToSpeech - workspace not found!`
                 )
             }
+            telemetryFlow = { id: chatflow.id, updatedDate: chatflow.updatedDate }
             // Get TTS config from chatflow
             const ttsConfig = JSON.parse(chatflow.textToSpeech)
 
@@ -144,41 +147,47 @@ const generateTextToSpeech = async (req: Request, res: Response) => {
         res.once('close', onDisconnect)
 
         try {
-            await convertTextToSpeechStream(
-                text,
-                textToSpeechConfig,
-                options,
-                abortController,
-                (format: string) => {
-                    assertResponseOpen()
-                    const startResponse = {
-                        event: 'tts_start',
-                        data: { chatMessageId, format }
-                    }
-                    res.write('event: tts_start\n')
-                    res.write(`data: ${JSON.stringify(startResponse)}\n\n`)
-                },
-                (chunk: Buffer) => {
-                    assertResponseOpen()
-                    const audioBase64 = chunk.toString('base64')
-                    const clientResponse = {
-                        event: 'tts_data',
-                        data: { chatMessageId, audioChunk: audioBase64 }
-                    }
-                    res.write('event: tts_data\n')
-                    res.write(`data: ${JSON.stringify(clientResponse)}\n\n`)
-                },
-                () => {
-                    assertResponseOpen()
-                    completed = true
-                    const endResponse = {
-                        event: 'tts_end',
-                        data: { chatMessageId }
-                    }
-                    res.write('event: tts_end\n')
-                    res.write(`data: ${JSON.stringify(endResponse)}\n\n`)
-                    res.end()
-                }
+            await observeFlow(
+                telemetryFlow,
+                'text_to_speech',
+                () =>
+                    convertTextToSpeechStream(
+                        text,
+                        textToSpeechConfig,
+                        options,
+                        abortController,
+                        (format: string) => {
+                            assertResponseOpen()
+                            const startResponse = {
+                                event: 'tts_start',
+                                data: { chatMessageId, format }
+                            }
+                            res.write('event: tts_start\n')
+                            res.write(`data: ${JSON.stringify(startResponse)}\n\n`)
+                        },
+                        (chunk: Buffer) => {
+                            assertResponseOpen()
+                            const audioBase64 = chunk.toString('base64')
+                            const clientResponse = {
+                                event: 'tts_data',
+                                data: { chatMessageId, audioChunk: audioBase64 }
+                            }
+                            res.write('event: tts_data\n')
+                            res.write(`data: ${JSON.stringify(clientResponse)}\n\n`)
+                        },
+                        () => {
+                            assertResponseOpen()
+                            completed = true
+                            const endResponse = {
+                                event: 'tts_end',
+                                data: { chatMessageId }
+                            }
+                            res.write('event: tts_end\n')
+                            res.write(`data: ${JSON.stringify(endResponse)}\n\n`)
+                            res.end()
+                        }
+                    ),
+                abortController.signal
             )
         } catch (error) {
             if (abortController.signal.aborted) {

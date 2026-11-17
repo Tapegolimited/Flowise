@@ -6,6 +6,7 @@ import { Readable } from 'node:stream'
 import type { ReadableStream } from 'node:stream/web'
 import { safeVisualSpeechText } from './safeVisualSpeechText'
 import { getInworldVoices, streamInworldSpeech } from './inworldTextToSpeech'
+import { observeAiOperation } from './posthogAi'
 
 const TextToSpeechType = {
     OPENAI_TTS: 'openai',
@@ -64,36 +65,58 @@ export const convertTextToSpeechStream = async (
                                 apiKey: credentialData.openAIApiKey
                             })
 
-                            const response = await openai.audio.speech.create(
-                                {
-                                    model: 'gpt-4o-mini-tts',
-                                    voice: (textToSpeechConfig.voice || 'alloy') as
-                                        | 'alloy'
-                                        | 'ash'
-                                        | 'ballad'
-                                        | 'coral'
-                                        | 'echo'
-                                        | 'fable'
-                                        | 'nova'
-                                        | 'onyx'
-                                        | 'sage'
-                                        | 'shimmer',
-                                    input: speechText,
-                                    response_format: 'mp3'
+                            await observeAiOperation(
+                                '$ai_generation',
+                                'text_to_speech',
+                                'openai',
+                                'gpt-4o-mini-tts',
+                                async () => {
+                                    const response = await openai.audio.speech.create(
+                                        {
+                                            model: 'gpt-4o-mini-tts',
+                                            voice: (textToSpeechConfig.voice || 'alloy') as
+                                                | 'alloy'
+                                                | 'ash'
+                                                | 'ballad'
+                                                | 'coral'
+                                                | 'echo'
+                                                | 'fable'
+                                                | 'nova'
+                                                | 'onyx'
+                                                | 'sage'
+                                                | 'shimmer',
+                                            input: speechText,
+                                            response_format: 'mp3'
+                                        },
+                                        {
+                                            signal: abortController.signal
+                                        }
+                                    )
+
+                                    const stream = Readable.fromWeb(response.body as unknown as ReadableStream)
+                                    if (!stream) {
+                                        throw new Error('Failed to get response stream')
+                                    }
+
+                                    await new Promise<void>((complete, fail) => {
+                                        void processStreamWithRateLimit(
+                                            stream,
+                                            onChunk,
+                                            onEnd,
+                                            complete,
+                                            fail,
+                                            640,
+                                            20,
+                                            abortController,
+                                            () => {
+                                                streamDestroyed = true
+                                            }
+                                        ).catch(fail)
+                                    })
                                 },
-                                {
-                                    signal: abortController.signal
-                                }
+                                { signal: abortController.signal }
                             )
-
-                            const stream = Readable.fromWeb(response.body as unknown as ReadableStream)
-                            if (!stream) {
-                                throw new Error('Failed to get response stream')
-                            }
-
-                            await processStreamWithRateLimit(stream, onChunk, onEnd, resolve, reject, 640, 20, abortController, () => {
-                                streamDestroyed = true
-                            })
+                            resolve()
                             break
                         }
 
@@ -104,23 +127,45 @@ export const convertTextToSpeechStream = async (
                                 apiKey: credentialData.elevenLabsApiKey
                             })
 
-                            const response = await client.textToSpeech.stream(
-                                textToSpeechConfig.voice || '21m00Tcm4TlvDq8ikWAM',
-                                {
-                                    text: speechText,
-                                    modelId: 'eleven_multilingual_v2'
+                            await observeAiOperation(
+                                '$ai_generation',
+                                'text_to_speech',
+                                'elevenlabs',
+                                'eleven_multilingual_v2',
+                                async () => {
+                                    const response = await client.textToSpeech.stream(
+                                        textToSpeechConfig.voice || '21m00Tcm4TlvDq8ikWAM',
+                                        {
+                                            text: speechText,
+                                            modelId: 'eleven_multilingual_v2'
+                                        },
+                                        { abortSignal: abortController.signal }
+                                    )
+
+                                    const stream = Readable.fromWeb(response as unknown as ReadableStream)
+                                    if (!stream) {
+                                        throw new Error('Failed to get response stream')
+                                    }
+
+                                    await new Promise<void>((complete, fail) => {
+                                        void processStreamWithRateLimit(
+                                            stream,
+                                            onChunk,
+                                            onEnd,
+                                            complete,
+                                            fail,
+                                            640,
+                                            40,
+                                            abortController,
+                                            () => {
+                                                streamDestroyed = true
+                                            }
+                                        ).catch(fail)
+                                    })
                                 },
-                                { abortSignal: abortController.signal }
+                                { signal: abortController.signal }
                             )
-
-                            const stream = Readable.fromWeb(response as unknown as ReadableStream)
-                            if (!stream) {
-                                throw new Error('Failed to get response stream')
-                            }
-
-                            await processStreamWithRateLimit(stream, onChunk, onEnd, resolve, reject, 640, 40, abortController, () => {
-                                streamDestroyed = true
-                            })
+                            resolve()
                             break
                         }
                         default:

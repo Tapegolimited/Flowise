@@ -5,6 +5,7 @@ import { AssemblyAI } from 'assemblyai'
 import { getFileFromStorage } from './storageUtils'
 import axios from 'axios'
 import Groq from 'groq-sdk'
+import { observeAiOperation } from './posthogAi'
 
 const SpeechToTextType = {
     OPENAI_WHISPER: 'openAIWhisper',
@@ -27,13 +28,15 @@ export const convertSpeechToText = async (upload: IFileUpload, speechToTextConfi
                 }
                 const openAIClient = new OpenAIClient(openAIClientOptions)
                 const file = await toFile(audio_file, upload.name)
-                const openAITranscription = await openAIClient.audio.transcriptions.create({
-                    file: file,
-                    model: 'whisper-1',
-                    language: speechToTextConfig?.language,
-                    temperature: speechToTextConfig?.temperature ? parseFloat(speechToTextConfig.temperature) : undefined,
-                    prompt: speechToTextConfig?.prompt
-                })
+                const openAITranscription = await observeAiOperation('$ai_generation', 'speech_to_text', 'openai', 'whisper-1', () =>
+                    openAIClient.audio.transcriptions.create({
+                        file: file,
+                        model: 'whisper-1',
+                        language: speechToTextConfig?.language,
+                        temperature: speechToTextConfig?.temperature ? parseFloat(speechToTextConfig.temperature) : undefined,
+                        prompt: speechToTextConfig?.prompt
+                    })
+                )
                 if (openAITranscription?.text) {
                     return openAITranscription.text
                 }
@@ -49,7 +52,14 @@ export const convertSpeechToText = async (upload: IFileUpload, speechToTextConfi
                     speaker_labels: false
                 }
 
-                const assemblyAITranscription = await assemblyAIClient.transcripts.transcribe(params)
+                const assemblyAITranscription = await observeAiOperation(
+                    '$ai_generation',
+                    'speech_to_text',
+                    'assemblyai',
+                    undefined,
+                    () => assemblyAIClient.transcripts.transcribe(params),
+                    { classify: (result) => (result.status === 'error' ? 'error' : 'success') }
+                )
                 if (assemblyAITranscription?.text) {
                     return assemblyAITranscription.text
                 }
@@ -62,13 +72,20 @@ export const convertSpeechToText = async (upload: IFileUpload, speechToTextConfi
                 }
                 const localAIClient = new OpenAIClient(LocalAIClientOptions)
                 const file = await toFile(audio_file, upload.name)
-                const localAITranscription = await localAIClient.audio.transcriptions.create({
-                    file: file,
-                    model: speechToTextConfig?.model || 'whisper-1',
-                    language: speechToTextConfig?.language,
-                    temperature: speechToTextConfig?.temperature ? parseFloat(speechToTextConfig.temperature) : undefined,
-                    prompt: speechToTextConfig?.prompt
-                })
+                const localAITranscription = await observeAiOperation(
+                    '$ai_generation',
+                    'speech_to_text',
+                    'localai',
+                    speechToTextConfig?.model || 'whisper-1',
+                    () =>
+                        localAIClient.audio.transcriptions.create({
+                            file: file,
+                            model: speechToTextConfig?.model || 'whisper-1',
+                            language: speechToTextConfig?.language,
+                            temperature: speechToTextConfig?.temperature ? parseFloat(speechToTextConfig.temperature) : undefined,
+                            prompt: speechToTextConfig?.prompt
+                        })
+                )
                 if (localAITranscription?.text) {
                     return localAITranscription.text
                 }
@@ -93,12 +110,14 @@ export const convertSpeechToText = async (upload: IFileUpload, speechToTextConfi
                     }
                     formData.append('definition', JSON.stringify(definition))
 
-                    const response = await axios.post(`${baseUrl}?api-version=${apiVersion}`, formData, {
-                        headers: {
-                            'Ocp-Apim-Subscription-Key': credentialData.azureSubscriptionKey,
-                            Accept: 'application/json'
-                        }
-                    })
+                    const response = await observeAiOperation('$ai_generation', 'speech_to_text', 'azure', undefined, () =>
+                        axios.post(`${baseUrl}?api-version=${apiVersion}`, formData, {
+                            headers: {
+                                'Ocp-Apim-Subscription-Key': credentialData.azureSubscriptionKey,
+                                Accept: 'application/json'
+                            }
+                        })
+                    )
 
                     if (response.data && response.data.combinedPhrases.length > 0) {
                         return response.data.combinedPhrases[0]?.text || ''
@@ -113,13 +132,20 @@ export const convertSpeechToText = async (upload: IFileUpload, speechToTextConfi
                     apiKey: credentialData.groqApiKey
                 })
                 const file = await toFile(audio_file, upload.name)
-                const groqTranscription = await groqClient.audio.transcriptions.create({
-                    file,
-                    model: speechToTextConfig?.model || 'whisper-large-v3',
-                    language: speechToTextConfig?.language,
-                    temperature: speechToTextConfig?.temperature ? parseFloat(speechToTextConfig.temperature) : undefined,
-                    response_format: 'verbose_json'
-                })
+                const groqTranscription = await observeAiOperation(
+                    '$ai_generation',
+                    'speech_to_text',
+                    'groq',
+                    speechToTextConfig?.model || 'whisper-large-v3',
+                    () =>
+                        groqClient.audio.transcriptions.create({
+                            file,
+                            model: speechToTextConfig?.model || 'whisper-large-v3',
+                            language: speechToTextConfig?.language,
+                            temperature: speechToTextConfig?.temperature ? parseFloat(speechToTextConfig.temperature) : undefined,
+                            response_format: 'verbose_json'
+                        })
+                )
                 if (groqTranscription?.text) {
                     return groqTranscription.text
                 }

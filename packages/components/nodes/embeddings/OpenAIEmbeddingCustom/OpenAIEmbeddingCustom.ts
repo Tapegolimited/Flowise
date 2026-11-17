@@ -1,4 +1,5 @@
 import { ClientOptions, OpenAIEmbeddings, OpenAIEmbeddingsParams } from '@langchain/openai'
+import { ObservedOpenAIEmbeddings } from '../../../src/openAiEmbeddingObservability'
 import { ICommonObject, INode, INodeData, INodeParams } from '../../../src/Interface'
 import { getBaseClasses, getCredentialData, getCredentialParam } from '../../../src/utils'
 
@@ -140,7 +141,7 @@ class OpenAIEmbeddingCustom_Embeddings implements INode {
             }
         }
 
-        const model = new OpenAIEmbeddings(obj)
+        const model = new ObservedOpenAIEmbeddings(obj)
         return model
     }
 }

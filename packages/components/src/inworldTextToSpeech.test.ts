@@ -1,5 +1,7 @@
 import { getInworldVoices, projectInworldSpeechText, splitInworldSpeechText, streamInworldSpeech } from './inworldTextToSpeech'
 
+import { runWithAiTrace, type AiEvent } from './posthogAi'
+
 const originalFetch = global.fetch
 const mockFetch = jest.fn()
 const encoder = new TextEncoder()
@@ -107,11 +109,25 @@ describe('Inworld speech transport', () => {
 
     it('splits long input sequentially, preserving all text and one continuous start/end contract', async () => {
         const input = `${'First sentence. '.repeat(300)}${'x'.repeat(4200)}`
-        mockFetch.mockImplementation(async (_url, request) => streamed([`${frame(JSON.parse(request.body).text)}\n`]))
+        mockFetch.mockImplementation(async (_url, request) => {
+            const { text } = JSON.parse(request.body)
+            const payload = JSON.parse(frame(text))
+            payload.result.usage = { processedCharactersCount: text.length }
+            return streamed([`${JSON.stringify(payload)}\n`, '{"result":{"usage":{"processedCharactersCount":0}}}'])
+        })
         const chunks: Buffer[] = []
         const start = jest.fn()
         const end = jest.fn()
-        await streamInworldSpeech(input, config, new AbortController().signal, start, (chunk) => chunks.push(chunk), end)
+        const events: AiEvent[] = []
+        await runWithAiTrace(
+            (event) => events.push(event),
+            'speech-test',
+            1,
+            'text_to_speech',
+            undefined,
+            undefined,
+            () => streamInworldSpeech(input, config, new AbortController().signal, start, (chunk) => chunks.push(chunk), end)
+        )
         const requests = mockFetch.mock.calls.map((call) => JSON.parse(call[1].body).text)
         expect(requests.length).toBeGreaterThan(1)
         expect(requests.every((text) => text.length <= 4000)).toBe(true)
@@ -119,6 +135,10 @@ describe('Inworld speech transport', () => {
         expect(Buffer.concat(chunks).toString()).toBe(input)
         expect(start).toHaveBeenCalledTimes(1)
         expect(end).toHaveBeenCalledTimes(1)
+        const generations = events.filter((event) => event.event === '$ai_generation')
+        expect(generations.map((event) => event.properties.tt_input_characters)).toEqual(requests.map((text) => text.length))
+        expect(generations.every((event) => event.properties.$ai_provider === 'inworld')).toBe(true)
+        expect(JSON.stringify(events)).not.toMatch(/First sentence|synthetic-inworld-key|catalogue-voice-id/)
     })
 
     it('never cuts surrogate pairs or drops whitespace at request boundaries', () => {

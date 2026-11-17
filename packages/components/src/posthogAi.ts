@@ -131,6 +131,46 @@ export async function runWithAiTrace<T>(
     })
 }
 
+export async function observeAiOperation<T>(
+    event: '$ai_generation' | '$ai_embedding',
+    operation: string,
+    provider: string,
+    model: unknown,
+    execute: () => Promise<T>,
+    options: {
+        signal?: AbortSignal
+        classify?: (result: T) => Outcome
+        usage?: (result: T) => { tokens?: Record<string, unknown>; characters?: number }
+    } = {}
+): Promise<T> {
+    const state = context.getStore()
+    if (!state) return execute()
+    const properties: Properties = { $ai_parent_id: state.spanId, $ai_span_name: operation, $ai_provider: provider }
+    if (typeof model === 'string' && modelName.test(model)) properties.$ai_model = model
+    const started = performance.now()
+    let outcome: Outcome = 'success'
+    try {
+        const result = await execute()
+        try {
+            if (options.signal?.aborted) outcome = 'cancelled'
+            else if (options.classify) outcome = options.classify(result)
+            const usage = options.usage?.(result)
+            addAiUsage(properties, usage?.tokens)
+            if (usage?.characters !== undefined && Number.isSafeInteger(usage.characters) && usage.characters >= 0) {
+                properties.tt_input_characters = usage.characters
+            }
+        } catch {
+            // Provider results must stay available if diagnostic classification fails.
+        }
+        return result
+    } catch (error) {
+        outcome = outcomeFor(error, options.signal)
+        throw error
+    } finally {
+        capture(state, event, started, outcome, properties)
+    }
+}
+
 export function addAiUsage(properties: Properties, usage: Record<string, unknown> | undefined) {
     if (!usage) return
     const input = usage.input_tokens ?? usage.prompt_tokens ?? usage.promptTokenCount
